@@ -1,8 +1,8 @@
 import jax
 import jax.numpy as jnp
 
-from structures import State, EnvState, GoalEnvState
-from balls_base import BallsBase
+from balzax.structures import State, EnvState, GoalEnvState
+from balzax.balls_base import BallsBase
 
 def reward_center_dists(state: State):
     pos = jnp.array([[0.1, 0.1], [0.22, 0.22], [0.45, 0.45], [0.75, 0.75]])

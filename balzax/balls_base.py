@@ -2,13 +2,13 @@ import jax
 import jax.numpy as jnp
 from functools import partial
 
-from structures import Ball, State
-from structures import create_wall, get_ball_colliders, pen_res_functions_w
-from structures import update_agent_pos, update_bb, update_bw
-from structures import sample_ball_uniform_pos
-from structures import out
+from balzax.structures import Ball, State
+from balzax.structures import create_wall, get_ball_colliders, pen_res_functions_w
+from balzax.structures import update_agent_pos, update_bb, update_bw
+from balzax.structures import sample_ball_uniform_pos
+from balzax.structures import out
 
-from image_generation import balls_to_one_image
+from balzax.image_generation import balls_to_one_image
 
 
 def done_timestep(state: State, timestep, max_timestep = 10000) -> bool:

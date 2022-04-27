@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from functools import partial
 
-from structures import Ball
+from balzax.structures import Ball
 
 def scale_ball(ball: Ball, scale) -> Ball:
     """Performs homothety"""
