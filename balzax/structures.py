@@ -102,7 +102,7 @@ def pen_res_function_w(w: Wall):
     for one wall and multiple balls"""
     return jax.vmap(partial(pen_res_bw, w=w))
 
-def pen_res_functions_w(w_list: list[Wall]):
+def pen_res_functions_w(w_list):
     """Returns a list of pen_res_function_w corresponding to each wall of the
     input list."""
     return [pen_res_function_w(w=w) for w in w_list]
