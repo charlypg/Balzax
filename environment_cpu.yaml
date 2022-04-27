@@ -1,4 +1,4 @@
-name: balzax_mini
+name: balzax
 channels:
   - defaults
   - conda-forge
