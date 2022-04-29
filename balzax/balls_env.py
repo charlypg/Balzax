@@ -1,3 +1,4 @@
+import jax
 import jax.numpy as jnp
 import flax
 
@@ -46,6 +47,13 @@ class BallsEnv(BallsBase):
                         done=jnp.array(False, dtype=jnp.bool_),
                         obs=self.get_obs(new_balls),
                         balls=new_balls)
+    
+    def reset_done(self, env_state: EnvState) -> EnvState:
+        """Resets the environment when done."""
+        return jax.lax.cond(env_state.done,
+                            self.reset,
+                            lambda key: env_state,
+                            env_state.key)
     
     def step(self, env_state: EnvState, action: jnp.ndarray) -> EnvState:
         """Performs an environment step."""
