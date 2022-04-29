@@ -23,28 +23,6 @@ class State:
     ball: Ball
     obs: jnp.ndarray
 
-@flax.struct.dataclass
-class EnvState:
-    """Fully describes the environment 
-    state"""
-    key: jnp.ndarray
-    timestep: jnp.ndarray
-    reward: jnp.ndarray
-    done: jnp.ndarray
-    state: State
-
-@flax.struct.dataclass
-class GoalEnvState:
-    """Fully describes the system state 
-    and embeds necessary info for RL 
-    algorithms + goal specifications"""
-    key: jnp.ndarray
-    timestep: jnp.ndarray
-    reward: jnp.ndarray
-    done: jnp.ndarray
-    state: State
-    goal: State
-
 
 def out(ball: Ball, down=0., up=1.):
     """ball in the square delimitted by down and up ?"""

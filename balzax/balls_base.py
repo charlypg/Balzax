@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from functools import partial
 
-from balzax.structures import Ball, State
+from balzax.structures import Ball
 from balzax.structures import create_wall, get_ball_colliders, pen_res_functions_w
 from balzax.structures import update_agent_pos, update_bb, update_bw
 from balzax.structures import sample_ball_uniform_pos
@@ -10,9 +10,6 @@ from balzax.structures import out
 
 from balzax.image_generation import balls_to_one_image
 
-
-def done_timestep(state: State, timestep, max_timestep = 10000) -> bool:
-    return out(state.ball) | (timestep >= max_timestep)
 
 class BallsBase:
     def __init__(self, obs_type : str = 'position'): 
@@ -67,8 +64,13 @@ class BallsBase:
         new_balls = self.solve_bw_collisions(new_balls)
         return new_balls
     
+    def get_dpos(self, action: jnp.ndarray) -> jnp.ndarray:
+        """Returns a position variation from a velocity angle."""
+        angle = jnp.pi * action
+        return 0.02 * jnp.array([jnp.cos(angle), jnp.sin(angle)])
+    
     def reset_base(self, key):
-        """Resets the environment : new ball positions and new random key"""
+        """Resets the game : new ball positions and new random key"""
         new_balls = sample_ball_uniform_pos(key, 
                                             self.num_balls, 
                                             self.x_limit, 
@@ -80,7 +82,16 @@ class BallsBase:
         new_key = jax.random.split(key)[0]
         return new_balls, new_key
     
-    # Static method : precise ?
+    def step_base(self, balls: Ball, action: jnp.ndarray) -> Ball:
+        """Performs a game step"""
+        dpos = self.get_dpos(action)
+        new_balls = self.apply_update(balls, dpos)
+        return new_balls
+    
+    def done_base(self, balls: Ball, timestep, max_timestep) -> bool:
+        """Returns whether the game state is terminal or not"""
+        return out(balls) | (timestep >= max_timestep)
+    
     def get_pos(self, balls: Ball) -> jnp.ndarray:
         """Returns positions from balls"""
         return balls.pos.flatten()
@@ -90,23 +101,3 @@ class BallsBase:
         return balls_to_one_image(balls,
                                   self.colors,
                                   self.image_dim)
-    
-    def get_dpos(self, action: jnp.ndarray) -> jnp.ndarray:
-        """Returns a position variation from a velocity angle."""
-        angle = jnp.pi * action
-        return 0.02 * jnp.array([jnp.cos(angle), jnp.sin(angle)])
-    
-    def common_step(self, 
-                    state: State, 
-                    action: jnp.ndarray) -> State:
-        """Performs an MDP step : s_t + a_t -> s_{t+1}"""
-        dpos = self.get_dpos(action)
-        new_balls = self.apply_update(state.ball, dpos)
-        new_obs = self.get_obs(new_balls)
-        new_state = State(ball=new_balls, 
-                          obs=new_obs)
-        return new_state
-    
-    def compute_done(self, state: State, timestep) -> bool:
-        """Returns whether the state is terminal or not"""
-        return done_timestep(state, timestep)
