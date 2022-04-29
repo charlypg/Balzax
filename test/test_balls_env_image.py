@@ -17,7 +17,7 @@ jit_env_reset = jax.jit(env.reset) # env.reset
 jit_env_step = jax.jit(env.step) # env.step
  
 key = jax.random.PRNGKey(0)
-nb_iter = 100
+nb_iter = 200
 pulse = 2*jnp.pi/200
 image_list = []
  

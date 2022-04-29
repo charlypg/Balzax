@@ -1,28 +1,17 @@
 import jax
 import jax.numpy as jnp
-import flax
 
 from balzax.structures import Ball
 from balzax.balls_base import BallsBase
+from balzax.env import Env, EnvState
 
-
-@flax.struct.dataclass
-class EnvState:
-    """Fully describes the environment 
-    state"""
-    key: jnp.ndarray
-    timestep: jnp.ndarray
-    reward: jnp.ndarray
-    done: jnp.ndarray
-    obs: jnp.ndarray
-    balls: Ball
 
 def reward_center_dists(balls: Ball):
     pos = jnp.array([[0.1, 0.1], [0.22, 0.22], [0.45, 0.45], [0.75, 0.75]])
     return - jnp.sum((balls.pos - pos)**2)
 
 
-class BallsEnv(BallsBase):
+class BallsEnv(Env, BallsBase):
     """Balls RL environment"""
     
     def __init__(self, 
@@ -46,7 +35,7 @@ class BallsEnv(BallsBase):
                         reward=jnp.array(0.),
                         done=jnp.array(False, dtype=jnp.bool_),
                         obs=self.get_obs(new_balls),
-                        balls=new_balls)
+                        game_state=new_balls)
     
     def reset_done(self, env_state: EnvState) -> EnvState:
         """Resets the environment when done."""
@@ -57,9 +46,9 @@ class BallsEnv(BallsBase):
     
     def step(self, env_state: EnvState, action: jnp.ndarray) -> EnvState:
         """Performs an environment step."""
-        new_balls = self.step_base(env_state.balls, action)
+        new_balls = self.step_base(env_state.game_state, action)
         new_obs = self.get_obs(new_balls)
-        reward = self.compute_reward(env_state.balls, action, new_balls)
+        reward = self.compute_reward(env_state.game_state, action, new_balls)
         new_timestep = env_state.timestep + 1
         done = self.done_base(new_balls, new_timestep, self.max_timestep)
         return EnvState(key=env_state.key, 
@@ -67,4 +56,4 @@ class BallsEnv(BallsBase):
                         reward=reward,
                         done=done,
                         obs=new_obs,
-                        balls=new_balls)
+                        game_state=new_balls)
