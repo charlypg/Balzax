@@ -28,7 +28,7 @@ class BallsEnv(BallsBase):
     def __init__(self, 
                  obs_type : str = 'position',
                  max_timestep : int = 10000):
-        super().__init__(obs_type=obs_type)
+        BallsBase.__init__(self, obs_type=obs_type)
         self.max_timestep = jnp.array(max_timestep, dtype=jnp.int32)
     
     def compute_reward(self, 

@@ -17,7 +17,7 @@ jit_env_reset = jax.jit(env.reset) # env.reset
 jit_env_step = jax.jit(env.step) # env.step
  
 key = jax.random.PRNGKey(0)
-nb_iter = 10_000
+nb_iter = 100
 pulse = 2*jnp.pi/200
 image_list = []
  
@@ -51,13 +51,13 @@ t0 = time()
 for i in range(nb_iter):
     env_state = jit_env_step(env_state, jnp.sin(pulse*i))
     env_state = jit_env_reset_done(env_state)
-    #image_list.append(env_state.obs)
+    image_list.append(env_state.obs)
      
 print("Rollout of {0} iterations (compiled step and reset_done) : {1}".format(nb_iter, 
                                                                           time()-t0))
 print()
-"""
+
 for i, image in enumerate(image_list):
     plt.figure(i)
     plt.title('Timestep {}'.format(i))
-    plt.imshow(image, origin='lower')"""
+    plt.imshow(image, origin='lower')
