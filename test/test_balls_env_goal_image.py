@@ -3,10 +3,9 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 from time import time
  
-from balzax.env import GoalObs
 from balzax.balls_env_goal import BallsEnvGoal
 
-def plot_goalobs(i, goalobs : GoalObs):
+def plot_goalobs(i, goalobs: dict):
     plt.figure(i)
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
     fig.suptitle('Timestep {}'.format(i))

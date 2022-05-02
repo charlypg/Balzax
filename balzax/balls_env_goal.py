@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 
 from balzax.balls_base import BallsBase
-from balzax.env import GoalObs, GoalEnvState, BalzaxGoalEnv
+from balzax.env import GoalEnvState, BalzaxGoalEnv
     
 
 def compute_goal_l2_dist_2(goal_a: jnp.ndarray, goal_b: jnp.ndarray):
@@ -54,9 +54,9 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         observation = self.get_obs(new_balls)
         achieved_goal = self.compute_goal_projection(observation)
         
-        goalobs = GoalObs(observation=observation,
-                          achieved_goal=achieved_goal,
-                          desired_goal=desired_goal)
+        goalobs = {'observation': observation,
+                   'achieved_goal': achieved_goal,
+                   'desired_goal': desired_goal}
         
         return GoalEnvState(key=new_key,
                             timestep=jnp.array(0, dtype=jnp.int32),
@@ -83,9 +83,9 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         new_observation = self.get_obs(new_balls)
         new_achieved_goal = self.compute_goal_projection(new_observation)
         desired_goal = goal_env_state.goalobs.get('desired_goal')
-        new_goalobs = GoalObs(observation=new_observation,
-                              achieved_goal=new_achieved_goal,
-                              desired_goal=desired_goal)
+        new_goalobs = {'observation': new_observation,
+                       'achieved_goal': new_achieved_goal,
+                       'desired_goal': desired_goal}
         
         reward = self.compute_goal_reward(new_achieved_goal, desired_goal)
         new_timestep = goal_env_state.timestep + 1

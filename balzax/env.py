@@ -1,5 +1,5 @@
 import abc
-from typing import TypedDict
+from typing import Dict
 import jax.numpy as jnp
 import flax
 
@@ -30,13 +30,6 @@ class BalzaxEnv(abc.ABC):
         """Resets environment when done"""
 
 
-class GoalObs(TypedDict):
-    """Dictionary for observation and goal representation
-    like in the Gym robotics API."""
-    observation: jnp.ndarray
-    achieved_goal: jnp.ndarray
-    desired_goal: jnp.ndarray
-
 @flax.struct.dataclass
 class GoalEnvState:
     """Fully describes the system state 
@@ -46,7 +39,7 @@ class GoalEnvState:
     timestep: jnp.ndarray
     reward: jnp.ndarray
     done: jnp.ndarray
-    goalobs: GoalObs
+    goalobs: Dict[str, jnp.ndarray] 
     game_state: flax.struct.dataclass
 
 class BalzaxGoalEnv(abc.ABC):
