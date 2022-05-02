@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
@@ -9,24 +6,32 @@ from time import time
 from balzax.env import GoalObs
 from balzax.balls_env_goal import BallsEnvGoal
 
+
 def plot_vect_goalobs(i : int, vect_goalobs : GoalObs, num_goalobs : int):
-    plt.figure(i)
-    fig, axs = plt.subplots(num_goalobs, 3)
+    fig = plt.figure(i, constrained_layout=True)
     fig.suptitle('Timestep {}'.format(i))
-    for k, (key_goal, value_goal) in enumerate(zip(vect_goalobs.keys(), 
-                                                   vect_goalobs.values())):
-        for j in range(num_goalobs):
-            axs[j, k].imshow(value_goal[j], origin='lower')
-            axs[j, k].set_title('Env {0} : {1}'.format(j, key_goal))
+
+    # create num_goalobs x 1 subfigs
+    subfigs = fig.subfigures(nrows=num_goalobs, ncols=1)
+    for row, subfig in enumerate(subfigs):
+        subfig.suptitle('Environment {}'.format(row))
+
+        # create 1x3 subplots per subfig
+        axs = subfig.subplots(nrows=1, ncols=3)
+        for ax, field, images in zip(axs, 
+                                    vect_goalobs.keys(), 
+                                    vect_goalobs.values()):
+            ax.imshow(images[row])
+            ax.set_title(field)
 
 
 OBS_TYPE = 'image'
 SEED = 0
-NUM_ENV = 100
+NUM_ENV = 3
 MAX_TIMESTEP = 5
 
 NB_ITER_1 = 1
-NB_ITER_2 = 1000
+NB_ITER_2 = 21
 assert NB_ITER_1 < NB_ITER_2
 
 ACTION_0 = jnp.zeros((NUM_ENV,))
@@ -79,19 +84,19 @@ t0 = time()
 for _ in range(NB_ITER_1):
     env_states = vmap_env_step(env_states, ACTION_1)
     env_states = vmap_env_reset_done(env_states)
-    #goalobs_list.append(env_states.goalobs)
+    goalobs_list.append(env_states.goalobs)
 print("{0} iterations in {1}s".format(NB_ITER_1, time()-t0))
 print()
 
 pulse = 2*jnp.pi / NB_ITER_2 * jnp.ones((NUM_ENV,))
 t0 = time()
-for i in range(NB_ITER_1, NB_ITER_2):
+for i in range(NB_ITER_1, NB_ITER_1+NB_ITER_2):
     env_states = vmap_env_step(env_states, jnp.sin(pulse*i))
     env_states = vmap_env_reset_done(env_states)
-    #goalobs_list.append(env_states.goalobs)
+    goalobs_list.append(env_states.goalobs)
 print("{0} iterations in {1}s".format(NB_ITER_2, time()-t0))
 print()
-"""
-num_goalobs = min(3, NB_ITER_2)
+
+num_goalobs = min(2, NB_ITER_2)
 for i, vect_goalobs in enumerate(goalobs_list):
-    plot_vect_goalobs(i, vect_goalobs, num_goalobs)"""
+    plot_vect_goalobs(i, vect_goalobs, num_goalobs)
