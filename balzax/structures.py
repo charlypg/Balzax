@@ -17,12 +17,6 @@ class Wall:
     end: jnp.ndarray
     unit_start_to_end: jnp.ndarray
 
-@flax.struct.dataclass
-class State:
-    """Fully describes the system state"""
-    ball: Ball
-    obs: jnp.ndarray
-
 
 def out(ball: Ball, down=0., up=1.):
     """ball in the square delimitted by down and up ?"""
