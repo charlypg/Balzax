@@ -35,7 +35,7 @@ print("State of the environment : Timestep 0")
 print(env_state)
 print()
  
-image_list.append(env.get_image(env_state.balls))
+image_list.append(env.get_image(env_state.game_state))
  
  
 t0 = time()
@@ -45,19 +45,19 @@ print("State of the environment : Timestep 1")
 print(env_state)
 print()
  
-image_list.append(env.get_image(env_state.balls))
+image_list.append(env.get_image(env_state.game_state))
  
 t0 = time()
 for i in range(nb_iter):
     env_state = jit_env_step(env_state, jnp.sin(pulse*i))
     env_state = jit_env_reset_done(env_state)
-    #image_list.append(env.get_image(env_state.balls))
+    #image_list.append(env.get_image(env_state.game_state))
      
 print("Rollout of {0} iterations (compiled step and reset_done) : {1}".format(nb_iter, 
                                                                           time()-t0))
 print()
-"""
+
 for i, image in enumerate(image_list):
     plt.figure(i)
     plt.title('Timestep {}'.format(i))
-    plt.imshow(image, origin='lower')"""
+    plt.imshow(image, origin='lower')

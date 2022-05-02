@@ -3,7 +3,7 @@ import jax.numpy as jnp
 
 from balzax.structures import Ball
 from balzax.balls_base import BallsBase
-from balzax.env import Env, EnvState
+from balzax.env import BalzaxEnv, EnvState
 
 
 def reward_center_dists(balls: Ball):
@@ -11,7 +11,7 @@ def reward_center_dists(balls: Ball):
     return - jnp.sum((balls.pos - pos)**2)
 
 
-class BallsEnv(Env, BallsBase):
+class BallsEnv(BalzaxEnv, BallsBase):
     """Balls RL environment"""
     
     def __init__(self, 
@@ -46,11 +46,11 @@ class BallsEnv(Env, BallsBase):
     
     def step(self, env_state: EnvState, action: jnp.ndarray) -> EnvState:
         """Performs an environment step."""
-        new_balls = self.step_base(env_state.game_state, action)
+        new_balls = BallsBase.step_base(self, env_state.game_state, action)
         new_obs = self.get_obs(new_balls)
         reward = self.compute_reward(env_state.game_state, action, new_balls)
         new_timestep = env_state.timestep + 1
-        done = self.done_base(new_balls, new_timestep, self.max_timestep)
+        done = BallsBase.done_base(self, new_balls, new_timestep, self.max_timestep)
         return EnvState(key=env_state.key, 
                         timestep=new_timestep,
                         reward=reward,
