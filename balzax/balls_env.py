@@ -20,6 +20,30 @@ class BallsEnv(BalzaxEnv, BallsBase):
         BallsBase.__init__(self, obs_type=obs_type)
         self.max_timestep = jnp.array(max_timestep, dtype=jnp.int32)
     
+    @property
+    def observation_low(self):
+        return 0.
+    
+    @property
+    def observation_high(self):
+        return 1.
+    
+    @property
+    def action_size(self):
+        return 1
+    
+    @property
+    def action_shape(self):
+        return tuple()
+    
+    @property
+    def action_low(self):
+        return -1.
+    
+    @property
+    def action_high(self):
+        return 1.
+    
     def compute_reward(self, 
                        balls: Ball, 
                        action: jnp.ndarray, 

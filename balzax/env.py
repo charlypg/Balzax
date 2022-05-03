@@ -1,5 +1,6 @@
 import abc
 from typing import Dict
+import jax
 import jax.numpy as jnp
 import flax
 
@@ -28,6 +29,40 @@ class BalzaxEnv(abc.ABC):
     @abc.abstractmethod
     def reset_done(self, env_state: EnvState, key: jnp.ndarray) -> EnvState:
         """Resets environment when done"""
+    
+    @property
+    def observation_shape(self):
+        key = jax.random.PRNGKey(0)
+        env_state = self.reset(key)
+        return env_state.obs.shape
+    
+    @property
+    def observation_low(self):
+        raise Exception("BalzaxEnv : obs_low Not Implemented in inherited class")
+    
+    @property
+    def observation_high(self):
+        raise Exception("BalzaxEnv : obs_high Not Implemented in inherited class")
+    
+    @property
+    def action_size(self):
+        raise Exception("BalzaxEnv : action_size Not Implemented in inherited class")
+    
+    @property
+    def action_shape(self):
+        raise Exception("BalzaxEnv : action_shape Not Implemented in inherited class")
+    
+    @property
+    def action_low(self):
+        raise Exception("BalzaxEnv : action_low Not Implemented in inherited class")
+    
+    @property
+    def action_high(self):
+        raise Exception("BalzaxEnv : action_high Not Implemented in inherited class")
+    
+    @property
+    def unwrapped(self):
+        return self
 
 
 @flax.struct.dataclass
