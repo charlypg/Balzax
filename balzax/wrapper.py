@@ -2,6 +2,8 @@ import jax
 import jax.numpy as jnp
 import numpy as onp
 import gym
+from gym import error
+from abc import abstractmethod
 from typing import Optional
 from balzax.env import BalzaxEnv
 
@@ -135,3 +137,40 @@ class GymVecWrapper(gym.Env):
     
     def render(self, mode='human'):
         return None
+
+
+class GoalEnv(gym.Env):
+    """The GoalEnv class that was migrated from gym (v0.22) to gym-robotics.
+    We add a set_desired_goal() function."""
+
+    def reset(self, options=None, seed: Optional[int] = None, infos=None):
+        super().reset(seed=seed)
+        # Enforce that each GoalEnv uses a Goal-compatible observation space.
+        if not isinstance(self.observation_space, gym.spaces.Dict):
+            raise error.Error(
+                "GoalEnv requires an observation space of type gym.spaces.Dict"
+            )
+        for key in ["observation", "achieved_goal", "desired_goal"]:
+            if key not in self.observation_space.spaces:
+                raise error.Error('GoalEnv requires the "{}" key.'.format(key))
+
+    @abstractmethod
+    def compute_reward(self, achieved_goal, desired_goal, info):
+        """Compute the step reward.
+        Args:
+            achieved_goal (object): the goal that was achieved during execution
+            desired_goal (object): the desired goal
+            info (dict): an info dictionary with additional information
+        Returns:
+            float: The reward that corresponds to the provided achieved goal w.r.t. to
+            the desired goal. Note that the following should always hold true:
+                ob, reward, done, info = env.step()
+                assert reward == env.compute_reward(ob['achieved_goal'],
+                                                    ob['desired_goal'], info)
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def set_desired_goal(self, goal):
+        """Set the goal"""
+        raise NotImplementedError
