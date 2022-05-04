@@ -18,3 +18,4 @@ class GymBallsEnvGoal(GoalGymVecWrapper):
                          num_envs=num_envs,
                          seed=seed,
                          backend=backend)
+        self.max_episode_steps = max_timestep
