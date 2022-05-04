@@ -108,3 +108,46 @@ class BalzaxGoalEnv(abc.ABC):
     @abc.abstractmethod
     def reset_done(self, env_state: GoalEnvState, key: jnp.ndarray) -> GoalEnvState:
         """Resets environment when done"""
+    
+    @property
+    def goalobs_shapes(self):
+        key = jax.random.PRNGKey(0)
+        env_state = self.reset(key)
+        return (env_state.goalobs.get('observation').shape,
+                env_state.goalobs.get('achieved_goal').shape)
+    
+    @property
+    def goal_low(self):
+        raise Exception("BalzaxEnv : goal_low Not Implemented in inherited class")
+    
+    @property
+    def goal_high(self):
+        raise Exception("BalzaxEnv : goal_high Not Implemented in inherited class")
+    
+    @property
+    def observation_low(self):
+        raise Exception("BalzaxEnv : observation_low Not Implemented in inherited class")
+    
+    @property
+    def observation_high(self):
+        raise Exception("BalzaxEnv : observation_high Not Implemented in inherited class")
+    
+    @property
+    def action_size(self):
+        raise Exception("BalzaxEnv : action_size Not Implemented in inherited class")
+    
+    @property
+    def action_shape(self):
+        raise Exception("BalzaxEnv : action_shape Not Implemented in inherited class")
+    
+    @property
+    def action_low(self):
+        raise Exception("BalzaxEnv : action_low Not Implemented in inherited class")
+    
+    @property
+    def action_high(self):
+        raise Exception("BalzaxEnv : action_high Not Implemented in inherited class")
+    
+    @property
+    def unwrapped(self):
+        return self
