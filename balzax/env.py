@@ -82,6 +82,22 @@ class BalzaxGoalEnv(abc.ABC):
     for goal conditioned RL"""
     
     @abc.abstractmethod
+    def compute_projection(self, observation: jnp.ndarray) -> jnp.ndarray:
+        """Computes observation projection on goal space"""
+        
+    @abc.abstractmethod
+    def compute_reward(self, 
+                       achieved_goal: jnp.ndarray, 
+                       desired_goal: jnp.ndarray):
+        """Computes the reward"""
+    
+    @abc.abstractmethod
+    def set_desired_goal(self, 
+                         goal_env_state: GoalEnvState, 
+                         desired_goal: jnp.ndarray) -> GoalEnvState:
+        """Sets desired goal"""
+    
+    @abc.abstractmethod
     def reset(self, key: jnp.ndarray) -> GoalEnvState:
         """Resets the environment to an initial state"""
     

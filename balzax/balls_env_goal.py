@@ -44,15 +44,48 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         
         self.max_timestep = jnp.array(max_timestep, dtype=jnp.int32)
     
+    def compute_projection(self, observation: jnp.ndarray) -> jnp.ndarray:
+        """Computes observation projection on goal space"""
+        return self.compute_goal_projection(observation)
+    
+    def compute_reward(self, 
+                       achieved_goal: jnp.ndarray, 
+                       desired_goal: jnp.ndarray) -> jnp.ndarray:
+        """Computes the reward"""
+        return self.compute_goal_reward(achieved_goal, desired_goal)
+    
+    def set_desired_goal(self, 
+                         goal_env_state: GoalEnvState, 
+                         desired_goal: jnp.ndarray) -> GoalEnvState:
+        """Sets desired goal"""
+        new_goalobs = goal_env_state.goalobs
+        new_goalobs['desired_goal'] = desired_goal
+        return GoalEnvState(key=goal_env_state.key,
+                            timestep=goal_env_state.timestep,
+                            reward=goal_env_state.reward,
+                            done=goal_env_state.done,
+                            goalobs=new_goalobs,
+                            game_state=goal_env_state.game_state)
+    
+    def reset_goal(self, key):
+        """Picks an initial desired goal randomly"""
+        goal_balls, new_key = BallsBase.reset_base(self, key)
+        desired_goal = self.get_obs(goal_balls)
+        desired_goal = self.compute_projection(desired_goal)
+        return new_key, desired_goal
+    
+    def reset_game(self, key):
+        """Picks an initial observation randomly"""
+        new_balls, new_key = BallsBase.reset_base(self, key)
+        observation = self.get_obs(new_balls)
+        achieved_goal = self.compute_projection(observation)
+        return new_key, new_balls, observation, achieved_goal
+    
     def reset(self, key) -> GoalEnvState:
         """Resets environment and asign a new goal"""
-        goal_balls, inter_key = BallsBase.reset_base(self, key)
-        desired_goal = self.get_obs(goal_balls)
-        desired_goal = self.compute_goal_projection(desired_goal)
+        inter_key, desired_goal = self.reset_goal(key)
         
-        new_balls, new_key = BallsBase.reset_base(self, inter_key)
-        observation = self.get_obs(new_balls)
-        achieved_goal = self.compute_goal_projection(observation)
+        new_key, new_balls, observation, achieved_goal = self.reset_game(inter_key)
         
         goalobs = {'observation': observation,
                    'achieved_goal': achieved_goal,
@@ -81,13 +114,13 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
                                         action)
         
         new_observation = self.get_obs(new_balls)
-        new_achieved_goal = self.compute_goal_projection(new_observation)
+        new_achieved_goal = self.compute_projection(new_observation)
         desired_goal = goal_env_state.goalobs.get('desired_goal')
         new_goalobs = {'observation': new_observation,
                        'achieved_goal': new_achieved_goal,
                        'desired_goal': desired_goal}
         
-        reward = self.compute_goal_reward(new_achieved_goal, desired_goal)
+        reward = self.compute_reward(new_achieved_goal, desired_goal)
         new_timestep = goal_env_state.timestep + 1
         done = BallsBase.done_base(self, new_balls, new_timestep, self.max_timestep)
         
