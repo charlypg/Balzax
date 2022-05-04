@@ -49,6 +49,7 @@ class GymWrapper(gym.Env):
     
     def reset(self):
         self.env_state = self.reset_be(self.key)
+        self.key = self.env_state.key
         return onp.array(self.env_state.obs)
     
     def reset_done(self):
@@ -123,6 +124,7 @@ class GymVecWrapper(gym.Env):
     
     def reset(self):
         self.env_state = self.reset_be(self.keys)
+        self.keys = self.env_state.key
         return onp.array(self.env_state.obs)
     
     def reset_done(self):
@@ -262,6 +264,7 @@ class GoalGymVecWrapper(GoalEnv):
     
     def reset(self):
         self.env_state = self.reset_be(self.keys)
+        self.keys = self.env_state.key
         return jnpdict_to_onpdict(self.env_state.goalobs)
     
     def reset_done(self):
