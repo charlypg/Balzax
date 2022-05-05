@@ -7,11 +7,11 @@ from balzax.env import GoalEnvState, BalzaxGoalEnv
 
 def compute_goal_l2_dist_2(goal_a: jnp.ndarray, goal_b: jnp.ndarray):
     """Returns L2 distance at square between observation and desired goal."""
-    return - jnp.sum((goal_a - goal_b)**2)
+    return jnp.array([- jnp.sum((goal_a - goal_b)**2)])
 
 def compute_goal_l2_dist(goal_a: jnp.ndarray, goal_b: jnp.ndarray):
     """Returns L2 distance between observation and desired goal."""
-    return - jnp.linalg.norm(goal_a - goal_b)
+    return jnp.array([- jnp.linalg.norm(goal_a - goal_b)])
 
 def compute_similarity(image_a: jnp.ndarray, image_b: jnp.ndarray):
     """Returns a similarity measure between two sets (image observations)"""
@@ -19,7 +19,7 @@ def compute_similarity(image_a: jnp.ndarray, image_b: jnp.ndarray):
     b_bool = jnp.array(image_b, dtype=jnp.bool_)
     inter = jnp.sum(a_bool & b_bool)
     union = jnp.sum(a_bool | b_bool)
-    return inter / union
+    return jnp.array([inter / union])
 
 
 class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
@@ -61,12 +61,8 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         return 1.
     
     @property
-    def action_size(self):
-        return 1
-    
-    @property
     def action_shape(self):
-        return tuple()
+        return (1,)
     
     @property
     def action_low(self):
@@ -88,7 +84,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
     
     def compute_is_success(self, achieved_goal, desired_goal) -> jnp.ndarray:
         """Computes a boolean indicating whether the goal is reached or not"""
-        return jnp.array(False, dtype=jnp.bool_)
+        return jnp.array([False], dtype=jnp.bool_)
     
     def set_desired_goal(self, 
                          goal_env_state: GoalEnvState, 
@@ -128,15 +124,15 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
                    'desired_goal': desired_goal}
         
         is_success = self.compute_is_success(achieved_goal, desired_goal)
-        truncation = jnp.array(False, dtype=jnp.bool_)
+        truncation = jnp.array([False], dtype=jnp.bool_)
         metrics = {'is_success': is_success,
                    'truncation': truncation}
         
         done = is_success | truncation
         
         return GoalEnvState(key=new_key,
-                            timestep=jnp.array(0, dtype=jnp.int32),
-                            reward=jnp.array(0.),
+                            timestep=jnp.array([0], dtype=jnp.int32),
+                            reward=jnp.array([0.]),
                             done=done,
                             goalobs=goalobs,
                             game_state=new_balls,
@@ -144,7 +140,8 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
     
     def reset_done(self, goal_env_state: GoalEnvState) -> GoalEnvState:
         """Resets the environment when done."""
-        return jax.lax.cond(goal_env_state.done,
+        pred = goal_env_state.done.squeeze(-1)
+        return jax.lax.cond(pred,
                             self.reset,
                             lambda key: goal_env_state,
                             goal_env_state.key)

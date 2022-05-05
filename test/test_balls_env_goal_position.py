@@ -17,7 +17,7 @@ key = jax.random.PRNGKey(0)
 nb_iter_1 = 1
 nb_iter_2 = 10_000
 assert nb_iter_1 < nb_iter_2
-pulse = 2*jnp.pi/200
+pulse = jnp.array([2*jnp.pi/200])
 image_list = []
  
 t0 = time()
@@ -38,7 +38,7 @@ image_list.append(env.get_image(env_state.game_state))
  
  
 t0 = time()
-env_state = jit_env_step(env_state, jnp.array(0.))
+env_state = jit_env_step(env_state, jnp.array([0.]))
 print("Time of first step (jit+exec) : {}s".format(time()-t0))
 print("State of the environment : Timestep 1")
 print(env_state)

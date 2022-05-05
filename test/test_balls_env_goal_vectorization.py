@@ -33,8 +33,8 @@ NB_ITER_1 = 1
 NB_ITER_2 = 21
 assert NB_ITER_1 < NB_ITER_2
 
-ACTION_0 = jnp.zeros((NUM_ENV,))
-ACTION_1 = jnp.ones((NUM_ENV,))/2.
+ACTION_0 = jnp.zeros((NUM_ENV, 1))
+ACTION_1 = jnp.ones((NUM_ENV, 1))/2.
 
 key = jax.random.PRNGKey(SEED)
 keys = jax.random.split(key, num=NUM_ENV)
@@ -92,7 +92,7 @@ for _ in range(NB_ITER_1):
 print("{0} iterations in {1}s".format(NB_ITER_1, time()-t0))
 print()
 
-pulse = 2*jnp.pi / NB_ITER_2 * jnp.ones((NUM_ENV,))
+pulse = 2*jnp.pi / NB_ITER_2 * jnp.ones((NUM_ENV, 1))
 t0 = time()
 for i in range(NB_ITER_1, NB_ITER_1+NB_ITER_2):
     env_states = vmap_env_step(env_states, jnp.sin(pulse*i))

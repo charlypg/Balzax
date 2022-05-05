@@ -30,7 +30,7 @@ key = jax.random.PRNGKey(0)
 nb_iter_1 = 1
 nb_iter_2 = 200
 assert nb_iter_1 < nb_iter_2
-pulse = 2*jnp.pi/200
+pulse = jnp.array([2*jnp.pi/200])
 goalobs_list = []
 metrics_list = [] 
 
@@ -53,7 +53,7 @@ metrics_list.append(env_state.metrics)
  
  
 t0 = time()
-env_state = jit_env_step(env_state, jnp.array(0.))
+env_state = jit_env_step(env_state, jnp.array([0.]))
 print("Time of first step (jit+exec) : {}s".format(time()-t0))
 print("State of the environment : Timestep 1")
 print(env_state)
