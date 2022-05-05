@@ -278,16 +278,22 @@ class GoalGymVecWrapper(GoalEnv):
             self.step_be = jax.jit(jax.vmap(self.env.step), 
                                    backend=self.backend)
         
+        self.compute_reward_be = jax.jit(jax.vmap(self.env.compute_reward), 
+                                         backend=self.backend)
+        
+        self.set_desired_goal_be = jax.jit(jax.vmap(self.env.set_desired_goal), 
+                                           backend=self.backend)
+        
     def seed(self, seed: int = 0):
         key = jax.random.PRNGKey(seed)
         self.keys = jax.random.split(key, num=self.num_envs)
     
     def compute_reward(self, achieved_goal, desired_goal, info=dict()):
-        return self.env.compute_reward(achieved_goal, desired_goal)
+        return self.compute_reward_be(achieved_goal, desired_goal)
     
     def set_desired_goal(self, goal):
         """Set the goal"""
-        self.env_state = self.env.set_desired_goal(self.env_state, goal)
+        self.env_state = self.set_desired_goal_be(self.env_state, goal)
     
     def reset(self):
         self.env_state = self.reset_be(self.keys)
