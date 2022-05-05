@@ -45,9 +45,9 @@ t0 = time()
 for i in range(NB_ITER):
     action = onp.sin(PULSE * i)
     obs, reward, done, info = gym_env.step(action)
+    info_list.append(info)
     obs = gym_env.reset_done()
     obs_list.append(obs)
-    info_list.append(info)
 delta = time() - t0
 print("Rollout of {0} : {1}".format(NB_ITER, delta))
 

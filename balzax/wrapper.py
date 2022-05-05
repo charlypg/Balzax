@@ -233,9 +233,9 @@ class GoalGymVecWrapper(GoalEnv):
                 self.num_envs)
         
         # Action space
-        action_high = self.env.action_high * onp.ones(self.env.action_size,
+        action_high = self.env.action_high * onp.ones(self.env.action_shape,
                                                       dtype=onp.float32)
-        action_low = self.env.action_low * onp.ones(self.env.action_size,
+        action_low = self.env.action_low * onp.ones(self.env.action_shape,
                                                      dtype=onp.float32)
         self.single_action_space = gym.spaces.Box(action_low, 
                                                   action_high,
@@ -249,17 +249,8 @@ class GoalGymVecWrapper(GoalEnv):
                                 backend=self.backend)
         self.reset_done_be = jax.jit(jax.vmap(self.env.reset_done), 
                                      backend=self.backend)
-        
-        if self.env.action_size == 1:
-            def step_to_jit(env_state: GoalEnvState, action: jnp.ndarray):
-                action = action.squeeze(-1)
-                new_env_state = self.env.step(env_state, action)
-                return new_env_state
-            self.step_be = jax.jit(jax.vmap(step_to_jit), 
-                                   backend=self.backend)
-        else:
-            self.step_be = jax.jit(jax.vmap(self.env.step), 
-                                   backend=self.backend)
+        self.step_be = jax.jit(jax.vmap(self.env.step), 
+                               backend=self.backend)
         
         self.compute_reward_be = jax.jit(jax.vmap(self.env.compute_reward), 
                                          backend=self.backend)
@@ -272,11 +263,13 @@ class GoalGymVecWrapper(GoalEnv):
         self.keys = jax.random.split(key, num=self.num_envs)
     
     def compute_reward(self, achieved_goal, desired_goal, info=dict()):
-        return self.compute_reward_be(achieved_goal, desired_goal)
+        return self.compute_reward_be(jnp.array(achieved_goal), 
+                                      jnp.array(desired_goal))
     
     def set_desired_goal(self, goal):
         """Set the goal"""
-        self.env_state = self.set_desired_goal_be(self.env_state, goal)
+        self.env_state = self.set_desired_goal_be(self.env_state, 
+                                                  jnp.array(goal))
     
     def reset(self):
         self.env_state = self.reset_be(self.keys)
@@ -288,20 +281,11 @@ class GoalGymVecWrapper(GoalEnv):
         return jnpdict_to_onpdict(self.env_state.goalobs)
     
     def step(self, action : onp.ndarray):
-        #print("DEBUG : action shape : {0}".format(action.shape))
         self.env_state = self.step_be(self.env_state, jnp.array(action))
         goalobs = jnpdict_to_onpdict(self.env_state.goalobs)
-        #print("DEBUG : goal shape : {0}".format(goalobs.get('desired_goal').shape))
-        #print("DEBUG : obs shape : {0}".format(goalobs.get('observation').shape))
         reward = onp.array(self.env_state.reward)
-        reward = onp.expand_dims(reward, -1)
-        #print("DEBUG : reward shape : {0}".format(reward.shape))
         done = onp.array(self.env_state.done)
-        done = onp.expand_dims(done, -1)
-        #print("DEBUG : done shape : {0}".format(done.shape))
         info = jnpdict_to_onpdict(self.env_state.metrics)
-        info['truncation'] = onp.expand_dims(info.get('truncation'), -1)
-        info['is_success'] = onp.expand_dims(info.get('is_success'), -1)
         return goalobs, reward, done, info
     
     def render(self, mode='human'):
