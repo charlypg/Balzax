@@ -54,12 +54,19 @@ class BallsEnv(BalzaxEnv, BallsBase):
     def reset(self, key) -> EnvState:
         """Resets the environment step"""
         new_balls, new_key = BallsBase.reset_base(self, key)
+        
+        truncation = jnp.array(False, dtype=jnp.bool_)
+        metrics = {'truncation': truncation}
+        
+        done = truncation
+        
         return EnvState(key=new_key, 
                         timestep=jnp.array(0, dtype=jnp.int32),
                         reward=jnp.array(0.),
-                        done=jnp.array(False, dtype=jnp.bool_),
+                        done=done,
                         obs=self.get_obs(new_balls),
-                        game_state=new_balls)
+                        game_state=new_balls,
+                        metrics=metrics)
     
     def reset_done(self, env_state: EnvState) -> EnvState:
         """Resets the environment when done."""
@@ -74,10 +81,14 @@ class BallsEnv(BalzaxEnv, BallsBase):
         new_obs = self.get_obs(new_balls)
         reward = self.compute_reward(env_state.game_state, action, new_balls)
         new_timestep = env_state.timestep + 1
-        done = BallsBase.done_base(self, new_balls, new_timestep, self.max_timestep)
+        done_b = BallsBase.done_base(self, new_balls)
+        truncation = (new_timestep >= self.max_timestep)
+        metrics = {'truncation': truncation}
+        done = truncation | done_b
         return EnvState(key=env_state.key, 
                         timestep=new_timestep,
                         reward=reward,
                         done=done,
                         obs=new_obs,
-                        game_state=new_balls)
+                        game_state=new_balls,
+                        metrics=metrics)

@@ -166,7 +166,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         
         reward = self.compute_reward(new_achieved_goal, desired_goal)
         new_timestep = goal_env_state.timestep + 1
-        done_b = BallsBase.done_base(self, new_balls, new_timestep, self.max_timestep)
+        done_b = BallsBase.done_base(self, new_balls)
         
         is_success = self.compute_is_success(new_achieved_goal, desired_goal)
         truncation = (new_timestep >= self.max_timestep)

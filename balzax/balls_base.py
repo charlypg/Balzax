@@ -88,9 +88,9 @@ class BallsBase:
         new_balls = self.apply_update(balls, dpos)
         return new_balls
     
-    def done_base(self, balls: Ball, timestep, max_timestep) -> bool:
+    def done_base(self, balls: Ball) -> bool:
         """Returns whether the game state is terminal or not"""
-        return out(balls) | (timestep >= max_timestep)
+        return out(balls)
     
     def get_pos(self, balls: Ball) -> jnp.ndarray:
         """Returns positions from balls"""
