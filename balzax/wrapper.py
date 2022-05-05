@@ -5,7 +5,7 @@ import gym
 from gym import error
 from abc import abstractmethod
 from typing import Optional, Dict
-from balzax.env import BalzaxEnv, BalzaxGoalEnv, EnvState, GoalEnvState
+from balzax.env import BalzaxEnv, BalzaxGoalEnv
 
 
 def jnpdict_to_onpdict(jnp_dict: Dict[str, jnp.ndarray]):
