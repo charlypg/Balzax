@@ -86,6 +86,10 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         """Computes the reward"""
         return self.compute_goal_reward(achieved_goal, desired_goal)
     
+    def compute_is_success(self, achieved_goal, desired_goal) -> jnp.ndarray:
+        """Computes a boolean indicating whether the goal is reached or not"""
+        return jnp.array(False, dtype=jnp.bool_)
+    
     def set_desired_goal(self, 
                          goal_env_state: GoalEnvState, 
                          desired_goal: jnp.ndarray) -> GoalEnvState:
@@ -123,12 +127,16 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
                    'achieved_goal': achieved_goal,
                    'desired_goal': desired_goal}
         
+        is_success = self.compute_is_success(achieved_goal, desired_goal)
+        metrics = {'is_success': is_success}
+        
         return GoalEnvState(key=new_key,
                             timestep=jnp.array(0, dtype=jnp.int32),
                             reward=jnp.array(0.),
                             done=jnp.array(False, dtype=jnp.bool_),
                             goalobs=goalobs,
-                            game_state=new_balls)
+                            game_state=new_balls,
+                            metrics=metrics)
     
     def reset_done(self, goal_env_state: GoalEnvState) -> GoalEnvState:
         """Resets the environment when done."""
@@ -156,9 +164,13 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         new_timestep = goal_env_state.timestep + 1
         done = BallsBase.done_base(self, new_balls, new_timestep, self.max_timestep)
         
+        is_success = self.compute_is_success(new_achieved_goal, desired_goal)
+        metrics = {'is_success': is_success}
+        
         return GoalEnvState(key=goal_env_state.key,
                             timestep=new_timestep,
                             reward=reward,
                             done=done,
                             goalobs=new_goalobs,
-                            game_state=new_balls)
+                            game_state=new_balls,
+                            metrics=metrics)

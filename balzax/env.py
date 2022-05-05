@@ -92,8 +92,14 @@ class BalzaxGoalEnv(abc.ABC):
     @abc.abstractmethod
     def compute_reward(self, 
                        achieved_goal: jnp.ndarray, 
-                       desired_goal: jnp.ndarray):
+                       desired_goal: jnp.ndarray) -> jnp.ndarray:
         """Computes the reward"""
+        
+    @abc.abstractmethod
+    def compute_is_success(self, 
+                           achieved_goal: jnp.ndarray, 
+                           desired_goal: jnp.ndarray) -> jnp.ndarray:
+        """Computes a boolean indicating whether the goal is reached or not"""
     
     @abc.abstractmethod
     def set_desired_goal(self, 
