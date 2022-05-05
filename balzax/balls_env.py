@@ -8,7 +8,7 @@ from balzax.env import BalzaxEnv, EnvState
 
 def reward_center_dists(balls: Ball):
     pos = jnp.array([[0.1, 0.1], [0.22, 0.22], [0.45, 0.45], [0.75, 0.75]])
-    return - jnp.sum((balls.pos - pos)**2)
+    return - jnp.array([jnp.sum((balls.pos - pos)**2)])
 
 
 class BallsEnv(BalzaxEnv, BallsBase):
@@ -29,12 +29,8 @@ class BallsEnv(BalzaxEnv, BallsBase):
         return 1.
     
     @property
-    def action_size(self):
-        return 1
-    
-    @property
     def action_shape(self):
-        return tuple()
+        return (1,)
     
     @property
     def action_low(self):
@@ -55,14 +51,14 @@ class BallsEnv(BalzaxEnv, BallsBase):
         """Resets the environment step"""
         new_balls, new_key = BallsBase.reset_base(self, key)
         
-        truncation = jnp.array(False, dtype=jnp.bool_)
+        truncation = jnp.array([False], dtype=jnp.bool_)
         metrics = {'truncation': truncation}
         
         done = truncation
         
         return EnvState(key=new_key, 
-                        timestep=jnp.array(0, dtype=jnp.int32),
-                        reward=jnp.array(0.),
+                        timestep=jnp.array([0], dtype=jnp.int32),
+                        reward=jnp.array([0.]),
                         done=done,
                         obs=self.get_obs(new_balls),
                         game_state=new_balls,
@@ -70,7 +66,8 @@ class BallsEnv(BalzaxEnv, BallsBase):
     
     def reset_done(self, env_state: EnvState) -> EnvState:
         """Resets the environment when done."""
-        return jax.lax.cond(env_state.done,
+        pred = env_state.done.squeeze(-1)
+        return jax.lax.cond(pred,
                             self.reset,
                             lambda key: env_state,
                             env_state.key)

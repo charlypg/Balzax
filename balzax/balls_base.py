@@ -66,7 +66,8 @@ class BallsBase:
     
     def get_dpos(self, action: jnp.ndarray) -> jnp.ndarray:
         """Returns a position variation from a velocity angle."""
-        angle = jnp.pi * action
+        act = action.squeeze(-1)
+        angle = jnp.pi * act
         return 0.02 * jnp.array([jnp.cos(angle), jnp.sin(angle)])
     
     def reset_base(self, key):
@@ -88,9 +89,9 @@ class BallsBase:
         new_balls = self.apply_update(balls, dpos)
         return new_balls
     
-    def done_base(self, balls: Ball) -> bool:
+    def done_base(self, balls: Ball) -> jnp.ndarray:
         """Returns whether the game state is terminal or not"""
-        return out(balls)
+        return jnp.array([out(balls)], dtype=jnp.bool_)
     
     def get_pos(self, balls: Ball) -> jnp.ndarray:
         """Returns positions from balls"""

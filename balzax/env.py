@@ -47,10 +47,6 @@ class BalzaxEnv(abc.ABC):
         raise Exception("BalzaxEnv : obs_high Not Implemented in inherited class")
     
     @property
-    def action_size(self):
-        raise Exception("BalzaxEnv : action_size Not Implemented in inherited class")
-    
-    @property
     def action_shape(self):
         raise Exception("BalzaxEnv : action_shape Not Implemented in inherited class")
     
