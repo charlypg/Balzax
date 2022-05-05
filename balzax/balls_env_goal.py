@@ -128,12 +128,16 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
                    'desired_goal': desired_goal}
         
         is_success = self.compute_is_success(achieved_goal, desired_goal)
-        metrics = {'is_success': is_success}
+        truncation = jnp.array(False, dtype=jnp.bool_)
+        metrics = {'is_success': is_success,
+                   'truncation': truncation}
+        
+        done = is_success | truncation
         
         return GoalEnvState(key=new_key,
                             timestep=jnp.array(0, dtype=jnp.int32),
                             reward=jnp.array(0.),
-                            done=jnp.array(False, dtype=jnp.bool_),
+                            done=done,
                             goalobs=goalobs,
                             game_state=new_balls,
                             metrics=metrics)
@@ -162,10 +166,14 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         
         reward = self.compute_reward(new_achieved_goal, desired_goal)
         new_timestep = goal_env_state.timestep + 1
-        done = BallsBase.done_base(self, new_balls, new_timestep, self.max_timestep)
+        done_b = BallsBase.done_base(self, new_balls, new_timestep, self.max_timestep)
         
         is_success = self.compute_is_success(new_achieved_goal, desired_goal)
-        metrics = {'is_success': is_success}
+        truncation = (new_timestep >= self.max_timestep)
+        metrics = {'is_success': is_success,
+                   'truncation': truncation & jnp.logical_not(is_success)}
+        
+        done = is_success | truncation | done_b
         
         return GoalEnvState(key=goal_env_state.key,
                             timestep=new_timestep,
