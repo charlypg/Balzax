@@ -311,6 +311,7 @@ class GoalGymVecWrapper(GoalEnv):
         done = onp.expand_dims(done, -1)
         print("DEBUG : done shape : {0}".format(done.shape))
         info = jnpdict_to_onpdict(self.env_state.metrics)
+        info['truncation'] = onp.expand_dims(info.get('truncation'), -1)
         return goalobs, reward, done, info
     
     def render(self, mode='human'):
