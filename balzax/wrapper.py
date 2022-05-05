@@ -5,7 +5,7 @@ import gym
 from gym import error
 from abc import abstractmethod
 from typing import Optional, Dict
-from balzax.env import BalzaxEnv, BalzaxGoalEnv
+from balzax.env import BalzaxEnv, BalzaxGoalEnv, EnvState, GoalEnvState
 
 
 class GymWrapper(gym.Env):
@@ -20,11 +20,6 @@ class GymWrapper(gym.Env):
         self.seed(seed)
         self.backend = backend
         self.env_state = None
-        
-        # jit functions : BalzaxEnv dynamics
-        self.reset_be = jax.jit(self.env.reset, backend=self.backend)
-        self.reset_done_be = jax.jit(self.env.reset_done, backend=self.backend)
-        self.step_be = jax.jit(self.env.step, backend=self.backend)
         
         # Observation space
         obs_high = self.env.observation_high * onp.ones(self.env.observation_shape, 
@@ -44,6 +39,19 @@ class GymWrapper(gym.Env):
                                            action_high,
                                            dtype='float32')
         
+        # jit functions : BalzaxEnv dynamics
+        self.reset_be = jax.jit(self.env.reset, backend=self.backend)
+        self.reset_done_be = jax.jit(self.env.reset_done, backend=self.backend)
+        
+        if self.env.action_size == 1:
+            def step_to_jit(env_state: EnvState, action: jnp.ndarray):
+                action = action.squeeze(-1)
+                new_env_state = self.env.step(env_state, action)
+                return new_env_state
+            self.step_be = jax.jit(step_to_jit, backend=self.backend)
+        else:
+            self.step_be = jax.jit(self.env.step, backend=self.backend)
+        
     def seed(self, seed: int = 0):
         self.key = jax.random.PRNGKey(seed)
     
@@ -57,7 +65,6 @@ class GymWrapper(gym.Env):
         return onp.array(self.env_state.obs)
     
     def step(self, action : onp.ndarray):
-        action = action.squeeze(-1)
         self.env_state = self.step_be(self.env_state, jnp.array(action))
         obs = onp.array(self.env_state.obs)
         reward = onp.array(self.env_state.reward)
@@ -85,14 +92,6 @@ class GymVecWrapper(gym.Env):
         self.backend = backend
         self.env_state = None
         
-        # jit functions : BalzaxEnv dynamics
-        self.reset_be = jax.jit(jax.vmap(self.env.reset), 
-                                backend=self.backend)
-        self.reset_done_be = jax.jit(jax.vmap(self.env.reset_done), 
-                                     backend=self.backend)
-        self.step_be = jax.jit(jax.vmap(self.env.step), 
-                               backend=self.backend)
-        
         # Observation space
         obs_shape = self.env.observation_shape
         
@@ -119,6 +118,23 @@ class GymVecWrapper(gym.Env):
                 self.single_action_space,
                 self.num_envs)
         
+        # jit functions : BalzaxEnv dynamics
+        self.reset_be = jax.jit(jax.vmap(self.env.reset), 
+                                backend=self.backend)
+        self.reset_done_be = jax.jit(jax.vmap(self.env.reset_done), 
+                                     backend=self.backend)
+        
+        if self.env.action_size == 1:
+            def step_to_jit(env_state: EnvState, action: jnp.ndarray):
+                action = action.squeeze(-1)
+                new_env_state = self.env.step(env_state, action)
+                return new_env_state
+            self.step_be = jax.jit(jax.vmap(step_to_jit), 
+                                   backend=self.backend)
+        else:
+            self.step_be = jax.jit(jax.vmap(self.env.step), 
+                                   backend=self.backend)
+        
     def seed(self, seed: int = 0):
         key = jax.random.PRNGKey(seed)
         self.keys = jax.random.split(key, num=self.num_envs)
@@ -133,7 +149,6 @@ class GymVecWrapper(gym.Env):
         return onp.array(self.env_state.obs)
     
     def step(self, action : onp.ndarray):
-        action = action.squeeze(-1)
         self.env_state = self.step_be(self.env_state, jnp.array(action))
         obs = onp.array(self.env_state.obs)
         reward = onp.array(self.env_state.reward)
@@ -204,14 +219,6 @@ class GoalGymVecWrapper(GoalEnv):
         self.backend = backend
         self.env_state = None
         
-        # jit functions : BalzaxEnv dynamics
-        self.reset_be = jax.jit(jax.vmap(self.env.reset), 
-                                backend=self.backend)
-        self.reset_done_be = jax.jit(jax.vmap(self.env.reset_done), 
-                                     backend=self.backend)
-        self.step_be = jax.jit(jax.vmap(self.env.step), 
-                               backend=self.backend)
-        
         # Observation space
         
         obs_shape, goal_shape = self.env.goalobs_shapes
@@ -253,6 +260,23 @@ class GoalGymVecWrapper(GoalEnv):
                 self.single_action_space,
                 self.num_envs)
         
+        # jit functions : BalzaxEnv dynamics
+        self.reset_be = jax.jit(jax.vmap(self.env.reset), 
+                                backend=self.backend)
+        self.reset_done_be = jax.jit(jax.vmap(self.env.reset_done), 
+                                     backend=self.backend)
+        
+        if self.env.action_size == 1:
+            def step_to_jit(env_state: GoalEnvState, action: jnp.ndarray):
+                action = action.squeeze(-1)
+                new_env_state = self.env.step(env_state, action)
+                return new_env_state
+            self.step_be = jax.jit(jax.vmap(step_to_jit), 
+                                   backend=self.backend)
+        else:
+            self.step_be = jax.jit(jax.vmap(self.env.step), 
+                                   backend=self.backend)
+        
     def seed(self, seed: int = 0):
         key = jax.random.PRNGKey(seed)
         self.keys = jax.random.split(key, num=self.num_envs)
@@ -274,7 +298,6 @@ class GoalGymVecWrapper(GoalEnv):
         return jnpdict_to_onpdict(self.env_state.goalobs)
     
     def step(self, action : onp.ndarray):
-        action = action.squeeze(-1)
         #print("DEBUG : action shape : {0}".format(action.shape))
         self.env_state = self.step_be(self.env_state, jnp.array(action))
         goalobs = jnpdict_to_onpdict(self.env_state.goalobs)
