@@ -57,6 +57,7 @@ class GymWrapper(gym.Env):
         return onp.array(self.env_state.obs)
     
     def step(self, action : onp.ndarray):
+        action = action.squeeze(-1)
         self.env_state = self.step_be(self.env_state, jnp.array(action))
         obs = onp.array(self.env_state.obs)
         reward = onp.array(self.env_state.reward)
@@ -132,6 +133,7 @@ class GymVecWrapper(gym.Env):
         return onp.array(self.env_state.obs)
     
     def step(self, action : onp.ndarray):
+        action = action.squeeze(-1)
         self.env_state = self.step_be(self.env_state, jnp.array(action))
         obs = onp.array(self.env_state.obs)
         reward = onp.array(self.env_state.reward)

@@ -29,7 +29,7 @@ NUM_ENVS = 3
 SEED = 0
 MAX_TIMESTEP = 5
 NB_ITER = 21
-PULSE = 2*onp.pi/NB_ITER * onp.ones((NUM_ENVS,))
+PULSE = 2*onp.pi/NB_ITER * onp.ones((NUM_ENVS, 1))
 
 env = BallsEnvGoal(obs_type=OBS_TYPE, max_timestep=MAX_TIMESTEP)
 gym_env = GoalGymVecWrapper(env=env, num_envs=NUM_ENVS, seed=SEED)

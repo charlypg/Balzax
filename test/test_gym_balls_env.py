@@ -10,7 +10,7 @@ env = BallsEnv(obs_type='image', max_timestep=500)
 gym_env = GymWrapper(env=env, seed=0)
 
 NB_ITER = 200
-PULSE = 2*onp.pi/NB_ITER
+PULSE = onp.array([2*onp.pi/NB_ITER])
 
 t0 = time()
 obs = gym_env.reset()
