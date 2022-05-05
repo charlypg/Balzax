@@ -46,6 +46,7 @@ vmap_env_reset_done = jax.jit(jax.vmap(env.reset_done))
 vmap_env_step = jax.jit(jax.vmap(env.step))  
 
 goalobs_list = []
+metrics_list = [] 
 
 print()
 print("Observation type : {}".format(OBS_TYPE))
@@ -64,6 +65,7 @@ for key_goal, value_goal in zip(env_states.goalobs.keys(),
 print()
 
 goalobs_list.append(env_states.goalobs)
+metrics_list.append(env_states.metrics)
 
 t0 = time()
 env_states = vmap_env_step(env_states, ACTION_0)
@@ -71,6 +73,7 @@ print("First step (jit+exec) : {}".format(time()-t0))
 print()
 
 goalobs_list.append(env_states.goalobs)
+metrics_list.append(env_states.metrics)
 
 t0 = time()
 env_states = vmap_env_step(env_states, ACTION_1)
@@ -78,10 +81,12 @@ print("Second step (exec) : {}".format(time()-t0))
 print()
 
 goalobs_list.append(env_states.goalobs)
+metrics_list.append(env_states.metrics)
 
 t0 = time()
 for _ in range(NB_ITER_1):
     env_states = vmap_env_step(env_states, ACTION_1)
+    metrics_list.append(env_states.metrics)
     env_states = vmap_env_reset_done(env_states)
     goalobs_list.append(env_states.goalobs)
 print("{0} iterations in {1}s".format(NB_ITER_1, time()-t0))
@@ -91,6 +96,7 @@ pulse = 2*jnp.pi / NB_ITER_2 * jnp.ones((NUM_ENV,))
 t0 = time()
 for i in range(NB_ITER_1, NB_ITER_1+NB_ITER_2):
     env_states = vmap_env_step(env_states, jnp.sin(pulse*i))
+    metrics_list.append(env_states.metrics)
     env_states = vmap_env_reset_done(env_states)
     goalobs_list.append(env_states.goalobs)
 print("{0} iterations in {1}s".format(NB_ITER_2, time()-t0))

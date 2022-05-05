@@ -32,7 +32,8 @@ nb_iter_2 = 200
 assert nb_iter_1 < nb_iter_2
 pulse = 2*jnp.pi/200
 goalobs_list = []
- 
+metrics_list = [] 
+
 t0 = time()
 env_state = jit_env_reset(key)
 print("Time to reset (jit+exec) : {}s".format(time()-t0))
@@ -48,6 +49,7 @@ print(env_state)
 print()
  
 goalobs_list.append(env_state.goalobs)
+metrics_list.append(env_state.metrics)
  
  
 t0 = time()
@@ -58,10 +60,12 @@ print(env_state)
 print()
  
 goalobs_list.append(env_state.goalobs)
+metrics_list.append(env_state.metrics)
  
 t0 = time()
 for i in range(nb_iter_1):
     env_state = jit_env_step(env_state, jnp.sin(pulse*i))
+    metrics_list.append(env_state.metrics)
     env_state = jit_env_reset_done(env_state)
     goalobs_list.append(env_state.goalobs)
 print("Rollout of {0} iterations (compiled step and reset_done) : {1}".format(nb_iter_1, 
@@ -70,6 +74,7 @@ print("Rollout of {0} iterations (compiled step and reset_done) : {1}".format(nb
 t0 = time()
 for i in range(1, nb_iter_2):
     env_state = jit_env_step(env_state, jnp.sin(pulse*i))
+    metrics_list.append(env_state.metrics)
     env_state = jit_env_reset_done(env_state)
     goalobs_list.append(env_state.goalobs)  
 print("Rollout of {0} iterations (compiled step and reset_done) : {1}".format(nb_iter_2, 
