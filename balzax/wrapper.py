@@ -8,6 +8,13 @@ from typing import Optional, Dict
 from balzax.env import BalzaxEnv, BalzaxGoalEnv, EnvState, GoalEnvState
 
 
+def jnpdict_to_onpdict(jnp_dict: Dict[str, jnp.ndarray]):
+    onp_dict = dict()
+    for key, value in zip(jnp_dict.keys(), jnp_dict.values()):
+        onp_dict[key] = onp.array(value)
+    return onp_dict
+
+
 class GymWrapper(gym.Env):
     """A wrapper that converts Balzax Env to one that follows Gym API."""
     
@@ -69,7 +76,7 @@ class GymWrapper(gym.Env):
         obs = onp.array(self.env_state.obs)
         reward = onp.array(self.env_state.reward)
         done = onp.array(self.env_state.done)
-        info = dict()
+        info = jnpdict_to_onpdict(self.env_state.metrics)
         return obs, reward, done, info
     
     def render(self, mode='human'):
@@ -153,7 +160,7 @@ class GymVecWrapper(gym.Env):
         obs = onp.array(self.env_state.obs)
         reward = onp.array(self.env_state.reward)
         done = onp.array(self.env_state.done)
-        info = dict()
+        info = jnpdict_to_onpdict(self.env_state.metrics)
         return obs, reward, done, info
     
     def render(self, mode='human'):
@@ -196,12 +203,6 @@ class GoalEnv(gym.Env):
         """Set the goal"""
         raise NotImplementedError
 
-
-def jnpdict_to_onpdict(jnp_dict: Dict[str, jnp.ndarray]):
-    onp_dict = dict()
-    for key, value in zip(jnp_dict.keys(), jnp_dict.values()):
-        onp_dict[key] = onp.array(value)
-    return onp_dict
 
 class GoalGymVecWrapper(GoalEnv):
     """Vectorized version of GoalEnv.
