@@ -1,5 +1,5 @@
 import abc
-from typing import Dict
+from typing import Dict, Any
 import jax
 import jax.numpy as jnp
 import flax
@@ -14,6 +14,8 @@ class EnvState:
     reward: jnp.ndarray
     done: jnp.ndarray
     game_state: flax.struct.dataclass
+    metrics: Dict[str, jnp.ndarray] = flax.struct.field(default_factory=dict)
+    info: Dict[str, Any] = flax.struct.field(default_factory=dict)
 
 class BalzaxEnv(abc.ABC):
     """Defines a Balzax environment without goal"""
@@ -76,6 +78,8 @@ class GoalEnvState:
     done: jnp.ndarray
     goalobs: Dict[str, jnp.ndarray] 
     game_state: flax.struct.dataclass
+    metrics: Dict[str, jnp.ndarray] = flax.struct.field(default_factory=dict)
+    info: Dict[str, Any] = flax.struct.field(default_factory=dict)
 
 class BalzaxGoalEnv(abc.ABC):
     """Defines a Balzax environment with a goal
