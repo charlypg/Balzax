@@ -38,9 +38,9 @@ class GymWrapper(gym.Env):
                                                 dtype='float32')
         
         # Action space
-        action_high = self.env.action_high * onp.ones(self.env.action_size,
+        action_high = self.env.action_high * onp.ones(self.env.action_shape,
                                                       dtype=onp.float32)
-        action_low = self.env.action_low * onp.ones(self.env.action_size,
+        action_low = self.env.action_low * onp.ones(self.env.action_shape,
                                                      dtype=onp.float32)
         self.action_space = gym.spaces.Box(action_low, 
                                            action_high,
@@ -49,15 +49,7 @@ class GymWrapper(gym.Env):
         # jit functions : BalzaxEnv dynamics
         self.reset_be = jax.jit(self.env.reset, backend=self.backend)
         self.reset_done_be = jax.jit(self.env.reset_done, backend=self.backend)
-        
-        if self.env.action_size == 1:
-            def step_to_jit(env_state: EnvState, action: jnp.ndarray):
-                action = action.squeeze(-1)
-                new_env_state = self.env.step(env_state, action)
-                return new_env_state
-            self.step_be = jax.jit(step_to_jit, backend=self.backend)
-        else:
-            self.step_be = jax.jit(self.env.step, backend=self.backend)
+        self.step_be = jax.jit(self.env.step, backend=self.backend)
         
     def seed(self, seed: int = 0):
         self.key = jax.random.PRNGKey(seed)
@@ -114,9 +106,9 @@ class GymVecWrapper(gym.Env):
                 self.num_envs)
         
         # Action space
-        action_high = self.env.action_high * onp.ones(self.env.action_size,
+        action_high = self.env.action_high * onp.ones(self.env.action_shape,
                                                       dtype=onp.float32)
-        action_low = self.env.action_low * onp.ones(self.env.action_size,
+        action_low = self.env.action_low * onp.ones(self.env.action_shape,
                                                      dtype=onp.float32)
         self.single_action_space = gym.spaces.Box(action_low, 
                                                   action_high,
@@ -130,17 +122,8 @@ class GymVecWrapper(gym.Env):
                                 backend=self.backend)
         self.reset_done_be = jax.jit(jax.vmap(self.env.reset_done), 
                                      backend=self.backend)
-        
-        if self.env.action_size == 1:
-            def step_to_jit(env_state: EnvState, action: jnp.ndarray):
-                action = action.squeeze(-1)
-                new_env_state = self.env.step(env_state, action)
-                return new_env_state
-            self.step_be = jax.jit(jax.vmap(step_to_jit), 
-                                   backend=self.backend)
-        else:
-            self.step_be = jax.jit(jax.vmap(self.env.step), 
-                                   backend=self.backend)
+        self.step_be = jax.jit(jax.vmap(self.env.step), 
+                               backend=self.backend)
         
     def seed(self, seed: int = 0):
         key = jax.random.PRNGKey(seed)

@@ -17,11 +17,18 @@ obs = gym_env.reset()
 delta = time() - t0
 print("gym_env.reset : {}".format(delta))
 obs_list = [obs]
+reward_list = []
+done_list = []
+info_list = []
 
 t0 = time()
 for i in range(NB_ITER):
     action = onp.sin(PULSE * i)
     obs, reward, done, info = gym_env.step(action)
+    reward_list.append(reward)
+    done_list.append(done)
+    info_list.append(info)
+    obs = gym_env.reset_done()
     obs_list.append(obs)
 delta = time() - t0
 print("Rollout of {0} : {1}".format(NB_ITER, delta))
