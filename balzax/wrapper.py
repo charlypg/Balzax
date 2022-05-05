@@ -272,6 +272,7 @@ class GoalGymVecWrapper(GoalEnv):
         return jnpdict_to_onpdict(self.env_state.goalobs)
     
     def step(self, action : onp.ndarray):
+        action = action.squeeze(-1)
         print("DEBUG : action shape : {0}".format(action.shape))
         self.env_state = self.step_be(self.env_state, jnp.array(action))
         goalobs = jnpdict_to_onpdict(self.env_state.goalobs)
