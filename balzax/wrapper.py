@@ -305,8 +305,10 @@ class GoalGymVecWrapper(GoalEnv):
         print("DEBUG : goal shape : {0}".format(goalobs.get('desired_goal').shape))
         print("DEBUG : obs shape : {0}".format(goalobs.get('observation').shape))
         reward = onp.array(self.env_state.reward)
+        reward = onp.expand_dims(reward, -1)
         print("DEBUG : reward shape : {0}".format(reward.shape))
         done = onp.array(self.env_state.done)
+        done = onp.expand_dims(done, -1)
         print("DEBUG : done shape : {0}".format(done.shape))
         info = jnpdict_to_onpdict(self.env_state.metrics)
         return goalobs, reward, done, info
