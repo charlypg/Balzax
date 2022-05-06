@@ -33,7 +33,7 @@ def ball_to_imbool(reg_ball: Ball,
     return isin_ball_mat(x_vect, y_vect, image_ball)
 
 def ball_to_image(reg_ball: Ball,
-                  color: jnp.ndarray = jnp.array([255, 0, 0], dtype=jnp.int32),
+                  color: jnp.ndarray = jnp.array([1., 0, 0], dtype=jnp.float32),
                   image_dim: int = 224):
     """Returns an image of a colored ball."""
     mask = jnp.expand_dims(ball_to_imbool(reg_ball, image_dim), 
@@ -52,5 +52,5 @@ def balls_to_one_image(reg_ball: Ball,
     """Returns one image with all batched balls"""
     return jnp.clip(jnp.sum(balls_to_images(reg_ball, color, image_dim), axis=0),
                     0,
-                    255)
+                    1.)
     
