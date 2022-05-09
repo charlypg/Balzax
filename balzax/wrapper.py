@@ -50,9 +50,13 @@ class GymWrapper(gym.Env):
         self.reset_be = jax.jit(self.env.reset, backend=self.backend)
         self.reset_done_be = jax.jit(self.env.reset_done, backend=self.backend)
         self.step_be = jax.jit(self.env.step, backend=self.backend)
+        self.render_be = jax.jit(self.env.render, backend=self.backend)
         
     def seed(self, seed: int = 0):
         self.key = jax.random.PRNGKey(seed)
+        
+    def render(self, mode='image'):
+        return self.render_be(self.env_state)
     
     def reset(self):
         self.env_state = self.reset_be(self.key)
@@ -70,9 +74,6 @@ class GymWrapper(gym.Env):
         done = onp.array(self.env_state.done)
         info = jnpdict_to_onpdict(self.env_state.metrics)
         return obs, reward, done, info
-    
-    def render(self, mode='human'):
-        return None
 
 
 class GymVecWrapper(gym.Env):
@@ -124,10 +125,15 @@ class GymVecWrapper(gym.Env):
                                      backend=self.backend)
         self.step_be = jax.jit(jax.vmap(self.env.step), 
                                backend=self.backend)
+        self.render_be = jax.jit(jax.vmap(self.env.render),
+                                 backend=self.backend)
         
     def seed(self, seed: int = 0):
         key = jax.random.PRNGKey(seed)
         self.keys = jax.random.split(key, num=self.num_envs)
+    
+    def render(self, mode='image'):
+        return self.render_be(self.env_state)
     
     def reset(self):
         self.env_state = self.reset_be(self.keys)
@@ -145,9 +151,6 @@ class GymVecWrapper(gym.Env):
         done = onp.array(self.env_state.done)
         info = jnpdict_to_onpdict(self.env_state.metrics)
         return obs, reward, done, info
-    
-    def render(self, mode='human'):
-        return None
 
 
 class GoalEnv(gym.Env):
@@ -251,6 +254,8 @@ class GoalGymVecWrapper(GoalEnv):
                                      backend=self.backend)
         self.step_be = jax.jit(jax.vmap(self.env.step), 
                                backend=self.backend)
+        self.render_be = jax.jit(jax.vmap(self.env.render),
+                                 backend=self.backend)
         
         self.compute_reward_be = jax.jit(jax.vmap(self.env.compute_reward), 
                                          backend=self.backend)
@@ -261,6 +266,9 @@ class GoalGymVecWrapper(GoalEnv):
     def seed(self, seed: int = 0):
         key = jax.random.PRNGKey(seed)
         self.keys = jax.random.split(key, num=self.num_envs)
+    
+    def render(self, mode='image'):
+        return self.render_be(self.env_state)
     
     def compute_reward(self, achieved_goal, desired_goal, info=dict()):
         return self.compute_reward_be(jnp.array(achieved_goal), 
@@ -287,6 +295,3 @@ class GoalGymVecWrapper(GoalEnv):
         done = onp.array(self.env_state.done)
         info = jnpdict_to_onpdict(self.env_state.metrics)
         return goalobs, reward, done, info
-    
-    def render(self, mode='human'):
-        return None

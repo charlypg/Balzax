@@ -72,6 +72,10 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
     def action_high(self):
         return 1.
     
+    def render(self, goal_env_state: GoalEnvState):
+        """Returns an image of the scene"""
+        return BallsBase.get_image(self, goal_env_state.game_state)
+    
     def compute_projection(self, observation: jnp.ndarray) -> jnp.ndarray:
         """Computes observation projection on goal space"""
         return self.compute_goal_projection(observation)

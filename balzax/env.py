@@ -31,6 +31,10 @@ class BalzaxEnv(abc.ABC):
     @abc.abstractmethod
     def reset_done(self, env_state: EnvState, key: jnp.ndarray) -> EnvState:
         """Resets environment when done"""
+        
+    def render(self, env_state: EnvState):
+        """Returns a render of the env state"""
+        return None
     
     @property
     def observation_shape(self):
@@ -114,6 +118,10 @@ class BalzaxGoalEnv(abc.ABC):
     @abc.abstractmethod
     def reset_done(self, env_state: GoalEnvState, key: jnp.ndarray) -> GoalEnvState:
         """Resets environment when done"""
+    
+    def render(self, env_state: GoalEnvState):
+        """Returns a render of the env state"""
+        return None
     
     @property
     def goalobs_shapes(self):

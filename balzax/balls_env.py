@@ -40,6 +40,10 @@ class BallsEnv(BalzaxEnv, BallsBase):
     def action_high(self):
         return 1.
     
+    def render(self, env_state: EnvState):
+        """Returns an image of the scene"""
+        return BallsBase.get_image(self, env_state.game_state)
+    
     def compute_reward(self, 
                        balls: Ball, 
                        action: jnp.ndarray, 
