@@ -3,7 +3,7 @@ from balzax.balls_env_goal import BallsEnvGoal
 from balzax.wrapper import GoalGymVecWrapper
 
 class GymBallsEnvGoal(GoalGymVecWrapper):
-    """Gym environment wrapping a BallsEnvGoal environment"""
+    """Gym environment wrapping a vectorized BallsEnvGoal environment"""
     def __init__(self, 
                  obs_type : str = 'position', 
                  goal_projection : str = 'identity',
