@@ -1,4 +1,3 @@
-import jax
 import jax.numpy as jnp
 from functools import partial
 
@@ -6,18 +5,23 @@ from balzax.structures import Ball
 from balzax.structures import create_wall, get_ball_colliders, pen_res_functions_w
 from balzax.structures import update_agent_pos, update_bb, update_bw
 from balzax.structures import out
-from balzax.optim_reset_base import sample_uniform_pos, solve_reset
-
+from balzax.random_reset_base import compute_r, random_reset
 from balzax.image_generation import balls_to_one_image
 
 
 class BallsBase:
     def __init__(self, obs_type : str = 'position'): 
         self.num_balls = 4
-        self.x_limit = 1.
-        self.y_limit = 1.
-        self.init_radius = (1. + jnp.arange(self.num_balls, dtype=jnp.float32))
-        self.init_radius *= (min(self.x_limit, self.y_limit) / 5 / self.num_balls)
+        self.L = 1.
+        self.x_limit = self.L 
+        self.y_limit = self.L 
+        self.epsilon = 1e-12
+        self.N_randsamp = 50
+        self.r_max = compute_r(epsilon=self.epsilon, 
+                               N=self.N_randsamp, 
+                               n=self.num_balls, 
+                               L=self.L)
+        self.init_radius = self.r_max * jnp.ones((self.num_balls,))
         
         self.colors = 255*jnp.ones((self.num_balls,), dtype=jnp.int32)
         self.image_dim = 224
@@ -72,18 +76,12 @@ class BallsBase:
     
     def reset_base(self, key):
         """Resets the game : new ball positions and new random key"""
-        pos_0 = sample_uniform_pos(key, 
-                                   self.num_balls, 
-                                   self.x_limit, 
-                                   self.y_limit, 
-                                   self.init_radius)
-        
-        pos, fun_val = solve_reset(pos_0.flatten(), self.init_radius)
-        
-        new_balls = Ball(pos=pos.reshape(self.init_radius.shape[0], 2),
-                         radius=self.init_radius)
-        
-        new_key = jax.random.split(key)[0]
+        new_balls, new_key = random_reset(key, 
+                                          num_balls=self.num_balls, 
+                                          x_limit=self.x_limit, 
+                                          y_limit=self.y_limit, 
+                                          radius=self.init_radius, 
+                                          N=self.N_randsamp)
         return new_balls, new_key
     
     def step_base(self, balls: Ball, action: jnp.ndarray) -> Ball:
