@@ -10,12 +10,10 @@ def plot_vect_goalobs(i : int, vect_goalobs : dict, num_goalobs : int):
     fig = plt.figure(i, constrained_layout=True)
     fig.suptitle('Timestep {}'.format(i))
 
-    # create num_goalobs x 1 subfigs
     subfigs = fig.subfigures(nrows=num_goalobs, ncols=1)
     for row, subfig in enumerate(subfigs):
         subfig.suptitle('Environment {}'.format(row))
 
-        # create 1x3 subplots per subfig
         axs = subfig.subplots(nrows=1, ncols=3)
         for ax, field, images in zip(axs, 
                                     vect_goalobs.keys(), 
@@ -54,15 +52,3 @@ print("Rollout of {0} : {1}".format(NB_ITER, delta))
 num_goalobs = min(2, NUM_ENVS)
 for i, vect_goalobs in enumerate(obs_list):
     plot_vect_goalobs(i, vect_goalobs, num_goalobs)
-
-"""
-for i, obs in enumerate(obs_list):
-    plt.figure(i)
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
-    fig.suptitle('Timestep {}'.format(i))
-    ax1.set_title('Env 0')
-    ax1.imshow(obs[0], origin='lower')
-    ax2.set_title('Env 1')
-    ax2.imshow(obs[1], origin='lower')
-    ax3.set_title('Env 2')
-    ax3.imshow(obs[2], origin='lower')"""

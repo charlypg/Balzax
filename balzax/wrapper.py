@@ -9,6 +9,7 @@ from balzax.env import BalzaxEnv, BalzaxGoalEnv
 
 
 def jnpdict_to_onpdict(jnp_dict: Dict[str, jnp.ndarray]):
+    """Converts a dictionary with jax.numpy values to one with numpy values"""
     onp_dict = dict()
     for key, value in zip(jnp_dict.keys(), jnp_dict.values()):
         onp_dict[key] = onp.array(value)
@@ -52,21 +53,26 @@ class GymWrapper(gym.Env):
         self.render_be = jax.jit(self.env.render, backend=self.backend)
         
     def seed(self, seed: int = 0):
+        """Seed for pseudo-random number generation"""
         self.key = jax.random.PRNGKey(seed)
         
     def render(self, mode='image'):
+        """Rendering of the game state : image by default"""
         return self.render_be(self.env_state)
     
     def reset(self):
+        """Resets env state"""
         self.env_state = self.reset_be(self.key)
         self.key = self.env_state.key
         return self.env_state.obs
     
     def reset_done(self):
+        """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
         return self.env_state.obs
     
     def step(self, action):
+        """Performs an env step"""
         self.env_state = self.step_be(self.env_state, action)
         return (self.env_state.obs, 
                 self.env_state.reward, 
@@ -76,15 +82,19 @@ class GymWrapper(gym.Env):
 class GymWrapperSB3(GymWrapper):
     """Gym wrapper which can be used with stable-baselines3"""
     def render(self, mode='image'):
+        """Rendering of the game state : image by default"""
         return onp.array(super().render(mode=mode))
     
     def reset(self):
+        """Resets env state"""
         return onp.array(super().reset())
     
     def reset_done(self):
+        """Resets env when done is true"""
         return onp.array(super().reset_done())
     
     def step(self, action: onp.ndarray):
+        """Performs an env step"""
         obs, reward, done, info = super().step(jnp.array(action))
         obs = onp.array(obs)
         reward = onp.array(reward.squeeze(-1))
@@ -146,22 +156,27 @@ class GymVecWrapper(gym.Env):
                                  backend=self.backend)
         
     def seed(self, seed: int = 0):
+        """Seed for pseudo-random number generation"""
         key = jax.random.PRNGKey(seed)
         self.keys = jax.random.split(key, num=self.num_envs)
     
     def render(self, mode='image'):
+        """Rendering of the game state : image by default"""
         return self.render_be(self.env_state)
     
     def reset(self):
+        """Resets env state"""
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
         return self.env_state.obs
     
     def reset_done(self):
+        """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
         return self.env_state.obs
     
     def step(self, action):
+        """Performs an env step"""
         self.env_state = self.step_be(self.env_state, action)
         return (self.env_state.obs, 
                 self.env_state.reward, 
@@ -280,13 +295,16 @@ class GoalGymVecWrapper(GoalEnv):
                                            backend=self.backend)
         
     def seed(self, seed: int = 0):
+        """Seed for pseudo-random number generation"""
         key = jax.random.PRNGKey(seed)
         self.keys = jax.random.split(key, num=self.num_envs)
     
     def render(self, mode='image'):
+        """Rendering of the game state : image by default"""
         return self.render_be(self.env_state)
     
     def compute_reward(self, achieved_goal, desired_goal, info=dict()):
+        """Computes goal env reward"""
         return self.compute_reward_be(jnp.array(achieved_goal), 
                                       jnp.array(desired_goal))
     
@@ -296,15 +314,18 @@ class GoalGymVecWrapper(GoalEnv):
                                                   jnp.array(goal))
     
     def reset(self):
+        """Resets env state"""
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
         return self.env_state.goalobs
     
     def reset_done(self):
+        """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
         return self.env_state.goalobs
     
     def step(self, action : jnp.ndarray):
+        """Performs an env step"""
         self.env_state = self.step_be(self.env_state, action)
         return (self.env_state.goalobs, 
                 self.env_state.reward, 
