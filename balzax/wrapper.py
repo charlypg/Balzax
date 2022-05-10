@@ -282,16 +282,16 @@ class GoalGymVecWrapper(GoalEnv):
     def reset(self):
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
-        return jnpdict_to_onpdict(self.env_state.goalobs)
+        return self.env_state.goalobs
     
     def reset_done(self):
         self.env_state = self.reset_done_be(self.env_state)
-        return jnpdict_to_onpdict(self.env_state.goalobs)
+        return self.env_state.goalobs
     
-    def step(self, action : onp.ndarray):
-        self.env_state = self.step_be(self.env_state, jnp.array(action))
-        goalobs = jnpdict_to_onpdict(self.env_state.goalobs)
-        reward = onp.array(self.env_state.reward)
-        done = onp.array(self.env_state.done)
-        info = jnpdict_to_onpdict(self.env_state.metrics)
+    def step(self, action : jnp.ndarray):
+        self.env_state = self.step_be(self.env_state, action)
+        goalobs = self.env_state.goalobs
+        reward = self.env_state.reward
+        done = self.env_state.done
+        info = self.env_state.metrics
         return goalobs, reward, done, info
