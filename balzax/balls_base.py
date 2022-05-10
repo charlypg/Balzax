@@ -5,7 +5,6 @@ from functools import partial
 from balzax.structures import Ball
 from balzax.structures import create_wall, get_ball_colliders, pen_res_functions_w
 from balzax.structures import update_agent_pos, update_bb, update_bw
-#from balzax.structures import sample_ball_uniform_pos
 from balzax.structures import out
 from balzax.optim_reset_base import sample_uniform_pos, solve_reset
 
