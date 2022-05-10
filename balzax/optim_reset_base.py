@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import jax
 import jax.numpy as jnp
 from jax.scipy.optimize import minimize
