@@ -23,7 +23,7 @@ class BallsBase:
                                L=self.L)
         self.init_radius = self.r_max * jnp.ones((self.num_balls,))
         
-        self.colors = 255*jnp.ones((self.num_balls,), dtype=jnp.int32)
+        self.colors = 1.*jnp.ones((self.num_balls,), dtype=jnp.float32)
         self.image_dim = 224
         
         self.ball_colliders = get_ball_colliders(self.num_balls)
