@@ -61,19 +61,18 @@ class GymWrapper(gym.Env):
     def reset(self):
         self.env_state = self.reset_be(self.key)
         self.key = self.env_state.key
-        return onp.array(self.env_state.obs)
+        return self.env_state.obs
     
     def reset_done(self):
         self.env_state = self.reset_done_be(self.env_state)
-        return onp.array(self.env_state.obs)
+        return self.env_state.obs
     
-    def step(self, action : onp.ndarray):
-        self.env_state = self.step_be(self.env_state, jnp.array(action))
-        obs = onp.array(self.env_state.obs)
-        reward = onp.array(self.env_state.reward)
-        done = onp.array(self.env_state.done)
-        info = jnpdict_to_onpdict(self.env_state.metrics)
-        return obs, reward, done, info
+    def step(self, action):
+        self.env_state = self.step_be(self.env_state, action)
+        return (self.env_state.obs, 
+                self.env_state.reward, 
+                self.env_state.done, 
+                self.env_state.metrics)
 
 
 class GymVecWrapper(gym.Env):
@@ -138,19 +137,18 @@ class GymVecWrapper(gym.Env):
     def reset(self):
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
-        return onp.array(self.env_state.obs)
+        return self.env_state.obs
     
     def reset_done(self):
         self.env_state = self.reset_done_be(self.env_state)
-        return onp.array(self.env_state.obs)
+        return self.env_state.obs
     
-    def step(self, action : onp.ndarray):
-        self.env_state = self.step_be(self.env_state, jnp.array(action))
-        obs = onp.array(self.env_state.obs)
-        reward = onp.array(self.env_state.reward)
-        done = onp.array(self.env_state.done)
-        info = jnpdict_to_onpdict(self.env_state.metrics)
-        return obs, reward, done, info
+    def step(self, action):
+        self.env_state = self.step_be(self.env_state, action)
+        return (self.env_state.obs, 
+                self.env_state.reward, 
+                self.env_state.done, 
+                self.env_state.metrics)
 
 
 class GoalEnv(gym.Env):
@@ -290,8 +288,7 @@ class GoalGymVecWrapper(GoalEnv):
     
     def step(self, action : jnp.ndarray):
         self.env_state = self.step_be(self.env_state, action)
-        goalobs = self.env_state.goalobs
-        reward = self.env_state.reward
-        done = self.env_state.done
-        info = self.env_state.metrics
-        return goalobs, reward, done, info
+        return (self.env_state.goalobs, 
+                self.env_state.reward, 
+                self.env_state.done, 
+                self.env_state.metrics)
