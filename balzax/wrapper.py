@@ -14,7 +14,6 @@ def jnpdict_to_onpdict(jnp_dict: Dict[str, jnp.ndarray]):
         onp_dict[key] = onp.array(value)
     return onp_dict
 
-
 class GymWrapper(gym.Env):
     """A wrapper that converts Balzax Env to one that follows Gym API."""
     
@@ -73,6 +72,25 @@ class GymWrapper(gym.Env):
                 self.env_state.reward, 
                 self.env_state.done, 
                 self.env_state.metrics)
+
+class GymWrapperSB3(GymWrapper):
+    """Gym wrapper which can be used with stable-baselines3"""
+    def render(self, mode='image'):
+        return onp.array(super().render(mode=mode))
+    
+    def reset(self):
+        return onp.array(super().reset())
+    
+    def reset_done(self):
+        return onp.array(super().reset_done())
+    
+    def step(self, action: onp.ndarray):
+        obs, reward, done, info = super().step(jnp.array(action))
+        obs = onp.array(obs)
+        reward = onp.array(reward.squeeze(-1))
+        done = onp.array(done.squeeze(-1))
+        info = jnpdict_to_onpdict(info)
+        return obs, reward, done, info
 
 
 class GymVecWrapper(gym.Env):
