@@ -30,10 +30,11 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
     def __init__(
         self,
         obs_type: str = "position",
+        num_balls: int = 4,
         goal_projection: str = "identity",
         max_timestep: int = 10000,
     ):
-        BallsBase.__init__(self, obs_type=obs_type)
+        BallsBase.__init__(self, obs_type=obs_type, num_balls=num_balls)
 
         self.goal_reward_fcts = {
             "position": compute_goal_l2_dist_2,

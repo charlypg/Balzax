@@ -6,16 +6,19 @@ from balzax.balls_base import BallsBase
 from balzax.env import BalzaxEnv, EnvState
 
 
-def reward_center_dists(balls: Ball):
-    pos = jnp.array([[0.1, 0.1], [0.22, 0.22], [0.45, 0.45], [0.75, 0.75]])
-    return -jnp.array([jnp.sum((balls.pos - pos) ** 2)])
+def reward_bottom_left_corner(balls: Ball):
+    """Negative reward corresponding to the distance of balls to bottom left
+    corner."""
+    return -jnp.array([jnp.sum(balls.pos**2)])
 
 
 class BallsEnv(BalzaxEnv, BallsBase):
     """Balls RL environment"""
 
-    def __init__(self, obs_type: str = "position", max_timestep: int = 10000):
-        BallsBase.__init__(self, obs_type=obs_type)
+    def __init__(
+        self, obs_type: str = "position", num_balls: int = 4, max_timestep: int = 10000
+    ):
+        BallsBase.__init__(self, obs_type=obs_type, num_balls=num_balls)
         self.max_timestep = jnp.array(max_timestep, dtype=jnp.int32)
 
     @property
@@ -44,7 +47,7 @@ class BallsEnv(BalzaxEnv, BallsBase):
 
     def compute_reward(self, balls: Ball, action: jnp.ndarray, new_balls: Ball):
         """Returns the reward associated to a transition"""
-        return reward_center_dists(new_balls)
+        return reward_bottom_left_corner(new_balls)
 
     def reset(self, key) -> EnvState:
         """Resets the environment step"""

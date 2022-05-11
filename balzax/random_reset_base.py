@@ -28,8 +28,13 @@ def compute_p_M(epsilon, N):
 
 
 def compute_r(epsilon, N, n, L):
+    assert n >= 1
+    max_r = L / 10.0
+    if n == 1:
+        return max_r
     p_M = compute_p_M(epsilon, N)
-    return compute_l(p_M, n, L) / 2
+    r = compute_l(p_M, n, L) / 2
+    return min(r, max_r)
 
 
 def sample_balls(keys, num_balls, x_limit, y_limit, radius):

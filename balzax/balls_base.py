@@ -10,15 +10,15 @@ from balzax.image_generation import balls_to_one_image
 
 
 class BallsBase:
-    def __init__(self, obs_type: str = "position"):
-        self.num_balls = 4
-        self.L = 1.0
-        self.x_limit = self.L
-        self.y_limit = self.L
+    def __init__(self, obs_type: str = "position", num_balls: int = 4):
+        self.num_balls = num_balls
+        self.length = 1.0
+        self.x_limit = self.length
+        self.y_limit = self.length
         self.epsilon = 1e-12
-        self.N_randsamp = 50
+        self.nb_randsamp = 50
         self.r_max = compute_r(
-            epsilon=self.epsilon, N=self.N_randsamp, n=self.num_balls, L=self.L
+            epsilon=self.epsilon, N=self.nb_randsamp, n=self.num_balls, L=self.length
         )
         self.init_radius = self.r_max * jnp.ones((self.num_balls,))
 
@@ -81,7 +81,7 @@ class BallsBase:
             x_limit=self.x_limit,
             y_limit=self.y_limit,
             radius=self.init_radius,
-            N=self.N_randsamp,
+            N=self.nb_randsamp,
         )
         return new_balls, new_key
 
