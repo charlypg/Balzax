@@ -1,33 +1,31 @@
 import numpy as onp
 import matplotlib.pyplot as plt
 from time import time
- 
+
 from balzax.balls_env_goal import BallsEnvGoal
 from balzax.wrapper import GoalGymVecWrapper
 
 
-def plot_vect_goalobs(i : int, vect_goalobs : dict, num_goalobs : int):
+def plot_vect_goalobs(i: int, vect_goalobs: dict, num_goalobs: int):
     fig = plt.figure(i, constrained_layout=True)
-    fig.suptitle('Timestep {}'.format(i))
+    fig.suptitle("Timestep {}".format(i))
 
     subfigs = fig.subfigures(nrows=num_goalobs, ncols=1)
     for row, subfig in enumerate(subfigs):
-        subfig.suptitle('Environment {}'.format(row))
+        subfig.suptitle("Environment {}".format(row))
 
         axs = subfig.subplots(nrows=1, ncols=3)
-        for ax, field, images in zip(axs, 
-                                    vect_goalobs.keys(), 
-                                    vect_goalobs.values()):
+        for ax, field, images in zip(axs, vect_goalobs.keys(), vect_goalobs.values()):
             ax.imshow(images[row])
             ax.set_title(field)
 
 
-OBS_TYPE = 'image'
+OBS_TYPE = "image"
 NUM_ENVS = 3
 SEED = 0
 MAX_TIMESTEP = 5
 NB_ITER = 21
-PULSE = 2*onp.pi/NB_ITER * onp.ones((NUM_ENVS, 1))
+PULSE = 2 * onp.pi / NB_ITER * onp.ones((NUM_ENVS, 1))
 
 env = BallsEnvGoal(obs_type=OBS_TYPE, max_timestep=MAX_TIMESTEP)
 gym_env = GoalGymVecWrapper(env=env, num_envs=NUM_ENVS, seed=SEED)

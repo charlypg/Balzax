@@ -15,84 +15,86 @@ def jnpdict_to_onpdict(jnp_dict: Dict[str, jnp.ndarray]):
         onp_dict[key] = onp.array(value)
     return onp_dict
 
+
 class GymWrapper(gym.Env):
     """A wrapper that converts Balzax Env to one that follows Gym API."""
-    
-    def __init__(self, 
-                 env : BalzaxEnv, 
-                 seed : int = 0,
-                 backend : Optional[str] = None):
+
+    def __init__(self, env: BalzaxEnv, seed: int = 0, backend: Optional[str] = None):
         self.env = env
         self.key = None
         self.seed(seed)
         self.backend = backend
         self.env_state = None
-        
+
         # Observation space
-        obs_high = self.env.observation_high * onp.ones(self.env.observation_shape, 
-                                                        dtype=onp.float32)
-        obs_low = self.env.observation_low * onp.ones(self.env.observation_shape, 
-                                                      dtype=onp.float32)
-        self.observation_space = gym.spaces.Box(obs_low, 
-                                                obs_high, 
-                                                dtype='float32')
-        
+        obs_high = self.env.observation_high * onp.ones(
+            self.env.observation_shape, dtype=onp.float32
+        )
+        obs_low = self.env.observation_low * onp.ones(
+            self.env.observation_shape, dtype=onp.float32
+        )
+        self.observation_space = gym.spaces.Box(obs_low, obs_high, dtype="float32")
+
         # Action space
-        action_high = self.env.action_high * onp.ones(self.env.action_shape,
-                                                      dtype=onp.float32)
-        action_low = self.env.action_low * onp.ones(self.env.action_shape,
-                                                     dtype=onp.float32)
-        self.action_space = gym.spaces.Box(action_low, 
-                                           action_high,
-                                           dtype='float32')
-        
+        action_high = self.env.action_high * onp.ones(
+            self.env.action_shape, dtype=onp.float32
+        )
+        action_low = self.env.action_low * onp.ones(
+            self.env.action_shape, dtype=onp.float32
+        )
+        self.action_space = gym.spaces.Box(action_low, action_high, dtype="float32")
+
         # jit functions : BalzaxEnv dynamics
         self.reset_be = jax.jit(self.env.reset, backend=self.backend)
         self.reset_done_be = jax.jit(self.env.reset_done, backend=self.backend)
         self.step_be = jax.jit(self.env.step, backend=self.backend)
         self.render_be = jax.jit(self.env.render, backend=self.backend)
-        
+
     def seed(self, seed: int = 0):
         """Seed for pseudo-random number generation"""
         self.key = jax.random.PRNGKey(seed)
-        
-    def render(self, mode='image'):
+
+    def render(self, mode="image"):
         """Rendering of the game state : image by default"""
         return self.render_be(self.env_state)
-    
+
     def reset(self):
         """Resets env state"""
         self.env_state = self.reset_be(self.key)
         self.key = self.env_state.key
         return self.env_state.obs
-    
+
     def reset_done(self):
         """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
         return self.env_state.obs
-    
+
     def step(self, action):
         """Performs an env step"""
         self.env_state = self.step_be(self.env_state, action)
-        return (self.env_state.obs, 
-                self.env_state.reward, 
-                self.env_state.done, 
-                self.env_state.metrics)
+        return (
+            self.env_state.obs,
+            self.env_state.reward,
+            self.env_state.done,
+            self.env_state.metrics,
+        )
+
 
 class GymWrapperSB3(GymWrapper):
     """Gym wrapper which can be used with stable-baselines3"""
-    def render(self, mode='image'):
+
+    def render(self, mode="image"):
         """Rendering of the game state : image by default"""
         return onp.array(super().render(mode=mode))
-    
+
     def reset(self):
         """Resets env state"""
         return onp.array(super().reset())
-    
+
     def reset_done(self):
         """Resets env when done is true"""
         return onp.array(super().reset_done())
-    
+
     def step(self, action: onp.ndarray):
         """Performs an env step"""
         obs, reward, done, info = super().step(jnp.array(action))
@@ -106,82 +108,84 @@ class GymWrapperSB3(GymWrapper):
 class GymVecWrapper(gym.Env):
     """Vectorized version of GymWrapper.
     This wrapper that converts a vectorized Balzax Env to a Gym Env."""
-    
-    def __init__(self, 
-                 env : BalzaxEnv, 
-                 num_envs : int = 1,
-                 seed : int = 0,
-                 backend : Optional[str] = None):
+
+    def __init__(
+        self,
+        env: BalzaxEnv,
+        num_envs: int = 1,
+        seed: int = 0,
+        backend: Optional[str] = None,
+    ):
         self.env = env
         self.num_envs = num_envs
         self.keys = None
         self.seed(seed)
         self.backend = backend
         self.env_state = None
-        
+
         # Observation space
         obs_shape = self.env.observation_shape
-        
-        obs_high = self.env.observation_high * onp.ones(obs_shape, 
-                                                        dtype=onp.float32)
-        obs_low = self.env.observation_low * onp.ones(obs_shape, 
-                                                      dtype=onp.float32)
-        self.single_observation_space = gym.spaces.Box(obs_low, 
-                                                       obs_high, 
-                                                       dtype='float32')
+
+        obs_high = self.env.observation_high * onp.ones(obs_shape, dtype=onp.float32)
+        obs_low = self.env.observation_low * onp.ones(obs_shape, dtype=onp.float32)
+        self.single_observation_space = gym.spaces.Box(
+            obs_low, obs_high, dtype="float32"
+        )
         self.observation_space = gym.vector.utils.batch_space(
-                self.single_observation_space,
-                self.num_envs)
-        
+            self.single_observation_space, self.num_envs
+        )
+
         # Action space
-        action_high = self.env.action_high * onp.ones(self.env.action_shape,
-                                                      dtype=onp.float32)
-        action_low = self.env.action_low * onp.ones(self.env.action_shape,
-                                                     dtype=onp.float32)
-        self.single_action_space = gym.spaces.Box(action_low, 
-                                                  action_high,
-                                                  dtype='float32')
+        action_high = self.env.action_high * onp.ones(
+            self.env.action_shape, dtype=onp.float32
+        )
+        action_low = self.env.action_low * onp.ones(
+            self.env.action_shape, dtype=onp.float32
+        )
+        self.single_action_space = gym.spaces.Box(
+            action_low, action_high, dtype="float32"
+        )
         self.action_space = gym.vector.utils.batch_space(
-                self.single_action_space,
-                self.num_envs)
-        
+            self.single_action_space, self.num_envs
+        )
+
         # jit functions : BalzaxEnv dynamics
-        self.reset_be = jax.jit(jax.vmap(self.env.reset), 
-                                backend=self.backend)
-        self.reset_done_be = jax.jit(jax.vmap(self.env.reset_done), 
-                                     backend=self.backend)
-        self.step_be = jax.jit(jax.vmap(self.env.step), 
-                               backend=self.backend)
-        self.render_be = jax.jit(jax.vmap(self.env.render),
-                                 backend=self.backend)
-        
+        self.reset_be = jax.jit(jax.vmap(self.env.reset), backend=self.backend)
+        self.reset_done_be = jax.jit(
+            jax.vmap(self.env.reset_done), backend=self.backend
+        )
+        self.step_be = jax.jit(jax.vmap(self.env.step), backend=self.backend)
+        self.render_be = jax.jit(jax.vmap(self.env.render), backend=self.backend)
+
     def seed(self, seed: int = 0):
         """Seed for pseudo-random number generation"""
         key = jax.random.PRNGKey(seed)
         self.keys = jax.random.split(key, num=self.num_envs)
-    
-    def render(self, mode='image'):
+
+    def render(self, mode="image"):
         """Rendering of the game state : image by default"""
         return self.render_be(self.env_state)
-    
+
     def reset(self):
         """Resets env state"""
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
         return self.env_state.obs
-    
+
     def reset_done(self):
         """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
         return self.env_state.obs
-    
+
     def step(self, action):
         """Performs an env step"""
         self.env_state = self.step_be(self.env_state, action)
-        return (self.env_state.obs, 
-                self.env_state.reward, 
-                self.env_state.done, 
-                self.env_state.metrics)
+        return (
+            self.env_state.obs,
+            self.env_state.reward,
+            self.env_state.done,
+            self.env_state.metrics,
+        )
 
 
 class GoalEnv(gym.Env):
@@ -224,110 +228,106 @@ class GoalEnv(gym.Env):
 class GoalGymVecWrapper(GoalEnv):
     """Vectorized version of GoalEnv.
     This wrapper that converts a vectorized BalzaxGoalEnv to a Gym Env."""
-    
-    def __init__(self, 
-                 env : BalzaxGoalEnv, 
-                 num_envs : int = 1,
-                 seed : int = 0,
-                 backend : Optional[str] = None):
+
+    def __init__(
+        self,
+        env: BalzaxGoalEnv,
+        num_envs: int = 1,
+        seed: int = 0,
+        backend: Optional[str] = None,
+    ):
         self.env = env
         self.num_envs = num_envs
         self.keys = None
         self.seed(seed)
         self.backend = backend
         self.env_state = None
-        
+
         # Observation space
-        
+
         obs_shape, goal_shape = self.env.goalobs_shapes
-        
-        obs_high = self.env.observation_high * onp.ones(obs_shape, 
-                                                        dtype=onp.float32)
-        obs_low = self.env.observation_low * onp.ones(obs_shape, 
-                                                      dtype=onp.float32)
-        
-        goal_high = self.env.goal_high * onp.ones(goal_shape, 
-                                                  dtype=onp.float32)
-        goal_low = self.env.goal_low * onp.ones(goal_shape, 
-                                                dtype=onp.float32)
-        
+
+        obs_high = self.env.observation_high * onp.ones(obs_shape, dtype=onp.float32)
+        obs_low = self.env.observation_low * onp.ones(obs_shape, dtype=onp.float32)
+
+        goal_high = self.env.goal_high * onp.ones(goal_shape, dtype=onp.float32)
+        goal_low = self.env.goal_low * onp.ones(goal_shape, dtype=onp.float32)
+
         self.single_observation_space = gym.spaces.Dict(
             dict(
                 observation=gym.spaces.Box(obs_low, obs_high, dtype=onp.float32),
-                achieved_goal=gym.spaces.Box(
-                    goal_low, goal_high, dtype=onp.float32
-                ),
-                desired_goal=gym.spaces.Box(
-                    goal_low, goal_high, dtype=onp.float32
-                ),
+                achieved_goal=gym.spaces.Box(goal_low, goal_high, dtype=onp.float32),
+                desired_goal=gym.spaces.Box(goal_low, goal_high, dtype=onp.float32),
             )
         )
         self.observation_space = gym.vector.utils.batch_space(
-                self.single_observation_space,
-                self.num_envs)
-        
+            self.single_observation_space, self.num_envs
+        )
+
         # Action space
-        action_high = self.env.action_high * onp.ones(self.env.action_shape,
-                                                      dtype=onp.float32)
-        action_low = self.env.action_low * onp.ones(self.env.action_shape,
-                                                     dtype=onp.float32)
-        self.single_action_space = gym.spaces.Box(action_low, 
-                                                  action_high,
-                                                  dtype='float32')
+        action_high = self.env.action_high * onp.ones(
+            self.env.action_shape, dtype=onp.float32
+        )
+        action_low = self.env.action_low * onp.ones(
+            self.env.action_shape, dtype=onp.float32
+        )
+        self.single_action_space = gym.spaces.Box(
+            action_low, action_high, dtype="float32"
+        )
         self.action_space = gym.vector.utils.batch_space(
-                self.single_action_space,
-                self.num_envs)
-        
+            self.single_action_space, self.num_envs
+        )
+
         # jit functions : BalzaxEnv dynamics
-        self.reset_be = jax.jit(jax.vmap(self.env.reset), 
-                                backend=self.backend)
-        self.reset_done_be = jax.jit(jax.vmap(self.env.reset_done), 
-                                     backend=self.backend)
-        self.step_be = jax.jit(jax.vmap(self.env.step), 
-                               backend=self.backend)
-        self.render_be = jax.jit(jax.vmap(self.env.render),
-                                 backend=self.backend)
-        
-        self.compute_reward_be = jax.jit(jax.vmap(self.env.compute_reward), 
-                                         backend=self.backend)
-        
-        self.set_desired_goal_be = jax.jit(jax.vmap(self.env.set_desired_goal), 
-                                           backend=self.backend)
-        
+        self.reset_be = jax.jit(jax.vmap(self.env.reset), backend=self.backend)
+        self.reset_done_be = jax.jit(
+            jax.vmap(self.env.reset_done), backend=self.backend
+        )
+        self.step_be = jax.jit(jax.vmap(self.env.step), backend=self.backend)
+        self.render_be = jax.jit(jax.vmap(self.env.render), backend=self.backend)
+
+        self.compute_reward_be = jax.jit(
+            jax.vmap(self.env.compute_reward), backend=self.backend
+        )
+
+        self.set_desired_goal_be = jax.jit(
+            jax.vmap(self.env.set_desired_goal), backend=self.backend
+        )
+
     def seed(self, seed: int = 0):
         """Seed for pseudo-random number generation"""
         key = jax.random.PRNGKey(seed)
         self.keys = jax.random.split(key, num=self.num_envs)
-    
-    def render(self, mode='image'):
+
+    def render(self, mode="image"):
         """Rendering of the game state : image by default"""
         return self.render_be(self.env_state)
-    
+
     def compute_reward(self, achieved_goal, desired_goal, info=dict()):
         """Computes goal env reward"""
-        return self.compute_reward_be(jnp.array(achieved_goal), 
-                                      jnp.array(desired_goal))
-    
+        return self.compute_reward_be(jnp.array(achieved_goal), jnp.array(desired_goal))
+
     def set_desired_goal(self, goal):
         """Set the goal"""
-        self.env_state = self.set_desired_goal_be(self.env_state, 
-                                                  jnp.array(goal))
-    
+        self.env_state = self.set_desired_goal_be(self.env_state, jnp.array(goal))
+
     def reset(self):
         """Resets env state"""
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
         return self.env_state.goalobs
-    
+
     def reset_done(self):
         """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
         return self.env_state.goalobs
-    
-    def step(self, action : jnp.ndarray):
+
+    def step(self, action: jnp.ndarray):
         """Performs an env step"""
         self.env_state = self.step_be(self.env_state, action)
-        return (self.env_state.goalobs, 
-                self.env_state.reward, 
-                self.env_state.done, 
-                self.env_state.metrics)
+        return (
+            self.env_state.goalobs,
+            self.env_state.reward,
+            self.env_state.done,
+            self.env_state.metrics,
+        )

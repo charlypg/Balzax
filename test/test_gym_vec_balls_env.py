@@ -1,16 +1,16 @@
 import numpy as onp
 import matplotlib.pyplot as plt
 from time import time
- 
+
 from balzax.balls_env import BallsEnv
 from balzax.wrapper import GymVecWrapper
 
-OBS_TYPE = 'image'
+OBS_TYPE = "image"
 NUM_ENVS = 3
 SEED = 0
 MAX_TIMESTEP = 3
 NB_ITER = 22
-PULSE = 2*onp.pi/NB_ITER * onp.ones((NUM_ENVS, 1))
+PULSE = 2 * onp.pi / NB_ITER * onp.ones((NUM_ENVS, 1))
 
 env = BallsEnv(obs_type=OBS_TYPE, max_timestep=MAX_TIMESTEP)
 gym_env = GymVecWrapper(env=env, num_envs=NUM_ENVS, seed=SEED)
@@ -33,10 +33,10 @@ print("Rollout of {0} : {1}".format(NB_ITER, delta))
 for i, obs in enumerate(obs_list):
     plt.figure(i)
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
-    fig.suptitle('Timestep {}'.format(i))
-    ax1.set_title('Env 0')
-    ax1.imshow(obs[0], origin='lower')
-    ax2.set_title('Env 1')
-    ax2.imshow(obs[1], origin='lower')
-    ax3.set_title('Env 2')
-    ax3.imshow(obs[2], origin='lower')
+    fig.suptitle("Timestep {}".format(i))
+    ax1.set_title("Env 0")
+    ax1.imshow(obs[0], origin="lower")
+    ax2.set_title("Env 1")
+    ax2.imshow(obs[1], origin="lower")
+    ax3.set_title("Env 2")
+    ax3.imshow(obs[2], origin="lower")

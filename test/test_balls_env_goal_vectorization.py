@@ -6,25 +6,23 @@ from time import time
 from balzax.balls_env_goal import BallsEnvGoal
 
 
-def plot_vect_goalobs(i : int, vect_goalobs : dict, num_goalobs : int):
+def plot_vect_goalobs(i: int, vect_goalobs: dict, num_goalobs: int):
     fig = plt.figure(i, constrained_layout=True)
-    fig.suptitle('Timestep {}'.format(i))
+    fig.suptitle("Timestep {}".format(i))
 
     # create num_goalobs x 1 subfigs
     subfigs = fig.subfigures(nrows=num_goalobs, ncols=1)
     for row, subfig in enumerate(subfigs):
-        subfig.suptitle('Environment {}'.format(row))
+        subfig.suptitle("Environment {}".format(row))
 
         # create 1x3 subplots per subfig
         axs = subfig.subplots(nrows=1, ncols=3)
-        for ax, field, images in zip(axs, 
-                                    vect_goalobs.keys(), 
-                                    vect_goalobs.values()):
+        for ax, field, images in zip(axs, vect_goalobs.keys(), vect_goalobs.values()):
             ax.imshow(images[row])
             ax.set_title(field)
 
 
-OBS_TYPE = 'image'
+OBS_TYPE = "image"
 SEED = 0
 NUM_ENV = 3
 MAX_TIMESTEP = 5
@@ -34,7 +32,7 @@ NB_ITER_2 = 21
 assert NB_ITER_1 < NB_ITER_2
 
 ACTION_0 = jnp.zeros((NUM_ENV, 1))
-ACTION_1 = jnp.ones((NUM_ENV, 1))/2.
+ACTION_1 = jnp.ones((NUM_ENV, 1)) / 2.0
 
 key = jax.random.PRNGKey(SEED)
 keys = jax.random.split(key, num=NUM_ENV)
@@ -43,10 +41,10 @@ env = BallsEnvGoal(obs_type=OBS_TYPE, max_timestep=MAX_TIMESTEP)
 
 vmap_env_reset = jax.jit(jax.vmap(env.reset))
 vmap_env_reset_done = jax.jit(jax.vmap(env.reset_done))
-vmap_env_step = jax.jit(jax.vmap(env.step))  
+vmap_env_step = jax.jit(jax.vmap(env.step))
 
 goalobs_list = []
-metrics_list = [] 
+metrics_list = []
 
 print()
 print("Observation type : {}".format(OBS_TYPE))
@@ -56,11 +54,10 @@ print()
 
 t0 = time()
 env_states = vmap_env_reset(keys)
-print("Time of reset (jit+exec) : {}".format(time()-t0))
+print("Time of reset (jit+exec) : {}".format(time() - t0))
 print()
 
-for key_goal, value_goal in zip(env_states.goalobs.keys(), 
-                                env_states.goalobs.values()):
+for key_goal, value_goal in zip(env_states.goalobs.keys(), env_states.goalobs.values()):
     print("{0} shape : {1}".format(key_goal, value_goal.shape))
 print()
 
@@ -69,7 +66,7 @@ metrics_list.append(env_states.metrics)
 
 t0 = time()
 env_states = vmap_env_step(env_states, ACTION_0)
-print("First step (jit+exec) : {}".format(time()-t0))
+print("First step (jit+exec) : {}".format(time() - t0))
 print()
 
 goalobs_list.append(env_states.goalobs)
@@ -77,7 +74,7 @@ metrics_list.append(env_states.metrics)
 
 t0 = time()
 env_states = vmap_env_step(env_states, ACTION_1)
-print("Second step (exec) : {}".format(time()-t0))
+print("Second step (exec) : {}".format(time() - t0))
 print()
 
 goalobs_list.append(env_states.goalobs)
@@ -89,17 +86,17 @@ for _ in range(NB_ITER_1):
     metrics_list.append(env_states.metrics)
     env_states = vmap_env_reset_done(env_states)
     goalobs_list.append(env_states.goalobs)
-print("{0} iterations in {1}s".format(NB_ITER_1, time()-t0))
+print("{0} iterations in {1}s".format(NB_ITER_1, time() - t0))
 print()
 
-pulse = 2*jnp.pi / NB_ITER_2 * jnp.ones((NUM_ENV, 1))
+pulse = 2 * jnp.pi / NB_ITER_2 * jnp.ones((NUM_ENV, 1))
 t0 = time()
-for i in range(NB_ITER_1, NB_ITER_1+NB_ITER_2):
-    env_states = vmap_env_step(env_states, jnp.sin(pulse*i))
+for i in range(NB_ITER_1, NB_ITER_1 + NB_ITER_2):
+    env_states = vmap_env_step(env_states, jnp.sin(pulse * i))
     metrics_list.append(env_states.metrics)
     env_states = vmap_env_reset_done(env_states)
     goalobs_list.append(env_states.goalobs)
-print("{0} iterations in {1}s".format(NB_ITER_2, time()-t0))
+print("{0} iterations in {1}s".format(NB_ITER_2, time() - t0))
 print()
 
 num_goalobs = min(2, NB_ITER_2)
