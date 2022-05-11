@@ -9,6 +9,7 @@ class GymBallsEnvGoal(GoalGymVecWrapper):
     def __init__(
         self,
         obs_type: str = "position",
+        num_balls: int = 4,
         goal_projection: str = "identity",
         max_timestep: int = 10000,
         num_envs: int = 1,
@@ -17,6 +18,7 @@ class GymBallsEnvGoal(GoalGymVecWrapper):
     ):
         env = BallsEnvGoal(
             obs_type=obs_type,
+            num_balls=num_balls,
             goal_projection=goal_projection,
             max_timestep=max_timestep,
         )
