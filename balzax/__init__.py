@@ -46,12 +46,17 @@ gym.register(
     id="GymBallsEnvGoal-oneball-position-v0",
     entry_point="balzax.gym_balls_env_goal:GymBallsEnvGoal",
     max_episode_steps=None,
-    kwargs={"obs_type": "position", "num_balls": 1, "backend": "gpu"},
+    kwargs={
+        "obs_type": "position",
+        "num_balls": 1,
+        "max_timestep": 300,
+        "backend": "gpu",
+    },
 )
 
 gym.register(
     id="GymBallsEnvGoal-oneball-image-v0",
     entry_point="balzax.gym_balls_env_goal:GymBallsEnvGoal",
     max_episode_steps=None,
-    kwargs={"obs_type": "image", "num_balls": 1, "backend": "gpu"},
+    kwargs={"obs_type": "image", "num_balls": 1, "max_timestep": 300, "backend": "gpu"},
 )
