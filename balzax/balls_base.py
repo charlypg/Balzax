@@ -102,3 +102,11 @@ class BallsBase:
     def get_image(self, balls: Ball) -> jnp.ndarray:
         """Returns an image from balls"""
         return balls_to_one_image(balls, self.colors, self.image_dim)
+
+    def get_num_balls(self):
+        """Getter : number of balls"""
+        return self.num_balls
+
+    def get_image_dim(self):
+        """Getter : image dimensions"""
+        return self.image_dim
