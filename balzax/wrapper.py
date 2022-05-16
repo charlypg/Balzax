@@ -58,16 +58,22 @@ class GymWrapper(gym.Env):
         """Rendering of the game state : image by default"""
         return self.render_be(self.env_state)
 
-    def reset(self):
+    def reset(self, return_info: bool = False):
         """Resets env state"""
         self.env_state = self.reset_be(self.key)
         self.key = self.env_state.key
-        return self.env_state.obs
+        if return_info:
+            return self.env_state.obs, self.env_state.metrics
+        else:
+            return self.env_state.obs
 
-    def reset_done(self):
+    def reset_done(self, return_info: bool = False):
         """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
-        return self.env_state.obs
+        if return_info:
+            return self.env_state.obs, self.env_state.metrics
+        else:
+            return self.env_state.obs
 
     def step(self, action):
         """Performs an env step"""
@@ -87,13 +93,13 @@ class GymWrapperSB3(GymWrapper):
         """Rendering of the game state : image by default"""
         return onp.array(super().render(mode=mode))
 
-    def reset(self):
+    def reset(self, return_info: bool = False):
         """Resets env state"""
-        return onp.array(super().reset())
+        return onp.array(super().reset(return_info=return_info))
 
-    def reset_done(self):
+    def reset_done(self, return_info: bool = False):
         """Resets env when done is true"""
-        return onp.array(super().reset_done())
+        return onp.array(super().reset_done(return_info=return_info))
 
     def step(self, action: onp.ndarray):
         """Performs an env step"""
@@ -166,16 +172,22 @@ class GymVecWrapper(gym.Env):
         """Rendering of the game state : image by default"""
         return self.render_be(self.env_state)
 
-    def reset(self):
+    def reset(self, return_info: bool = False):
         """Resets env state"""
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
-        return self.env_state.obs
+        if return_info:
+            return self.env_state.obs, self.env_state.metrics
+        else:
+            return self.env_state.obs
 
-    def reset_done(self):
+    def reset_done(self, return_info: bool = False):
         """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
-        return self.env_state.obs
+        if return_info:
+            return self.env_state.obs, self.env_state.metrics
+        else:
+            return self.env_state.obs
 
     def step(self, action):
         """Performs an env step"""
@@ -311,16 +323,22 @@ class GoalGymVecWrapper(GoalEnv):
         """Set the goal"""
         self.env_state = self.set_desired_goal_be(self.env_state, jnp.array(goal))
 
-    def reset(self):
+    def reset(self, return_info: bool = False):
         """Resets env state"""
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
-        return self.env_state.goalobs
+        if return_info:
+            return self.env_state.goalobs, self.env_state.metrics
+        else:
+            return self.env_state.goalobs
 
-    def reset_done(self):
+    def reset_done(self, return_info: bool = False):
         """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
-        return self.env_state.goalobs
+        if return_info:
+            return self.env_state.goalobs, self.env_state.metrics
+        else:
+            return self.env_state.goalobs
 
     def step(self, action: jnp.ndarray):
         """Performs an env step"""
