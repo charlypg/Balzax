@@ -224,7 +224,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         self.set_goal_reward_fct(keyword)
 
     def add_goal_projection(
-        self, keyword: str, function: Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
+        self, keyword: str, function: Callable[[jnp.ndarray], jnp.ndarray]
     ):
         self.goal_projections[keyword] = function
 
@@ -232,7 +232,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         self.compute_goal_projection = self.goal_projections.get(keyword)
 
     def add_set_goal_projection(
-        self, keyword: str, function: Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
+        self, keyword: str, function: Callable[[jnp.ndarray], jnp.ndarray]
     ):
         self.add_goal_projection(keyword, function)
         self.set_goal_projection(keyword)

@@ -14,9 +14,7 @@ def gym_balls_env_goal_factory(
     num_envs: int = 1,
     seed: int = 0,
     backend: Optional[str] = None,
-    projection_fct: Tuple[
-        str, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
-    ] = None,
+    projection_fct: Tuple[str, Callable[[jnp.ndarray], jnp.ndarray]] = None,
     reward_fct: Tuple[str, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]] = None,
     success_fct: Tuple[str, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]] = None,
 ):
@@ -51,9 +49,7 @@ class GymBallsEnvGoal(GoalGymVecWrapper):
         num_envs: int = 1,
         seed: int = 0,
         backend: Optional[str] = None,
-        projection_fct: Tuple[
-            str, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
-        ] = None,
+        projection_fct: Tuple[str, Callable[[jnp.ndarray], jnp.ndarray]] = None,
         reward_fct: Tuple[
             str, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
         ] = None,
