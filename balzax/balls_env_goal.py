@@ -1,21 +1,22 @@
 import jax
 import jax.numpy as jnp
+from typing import Callable
 
 from balzax.balls_base import BallsBase
 from balzax.env import GoalEnvState, BalzaxGoalEnv
 
 
-def compute_goal_l2_dist_2(goal_a: jnp.ndarray, goal_b: jnp.ndarray):
+def compute_goal_l2_dist_2(goal_a: jnp.ndarray, goal_b: jnp.ndarray) -> jnp.ndarray:
     """Returns L2 distance at square between observation and desired goal."""
     return jnp.array([-jnp.sum((goal_a - goal_b) ** 2)])
 
 
-def compute_goal_l2_dist(goal_a: jnp.ndarray, goal_b: jnp.ndarray):
+def compute_goal_l2_dist(goal_a: jnp.ndarray, goal_b: jnp.ndarray) -> jnp.ndarray:
     """Returns L2 distance between observation and desired goal."""
     return jnp.array([-jnp.linalg.norm(goal_a - goal_b)])
 
 
-def compute_similarity(image_a: jnp.ndarray, image_b: jnp.ndarray):
+def compute_similarity(image_a: jnp.ndarray, image_b: jnp.ndarray) -> jnp.ndarray:
     """Returns a similarity measure between two sets (image observations)"""
     a_bool = jnp.array(image_a, dtype=jnp.bool_)
     b_bool = jnp.array(image_b, dtype=jnp.bool_)
@@ -208,32 +209,44 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
     def action_high(self):
         return 1.0
 
-    def add_goal_reward_fct(self, keyword, function):
+    def add_goal_reward_fct(
+        self, keyword: str, function: Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
+    ):
         self.goal_reward_fcts[keyword] = function
 
-    def set_goal_reward_fct(self, keyword):
+    def set_goal_reward_fct(self, keyword: str):
         self.compute_goal_reward = self.goal_reward_fcts.get(keyword)
 
-    def add_set_goal_reward_fct(self, keyword, function):
+    def add_set_goal_reward_fct(
+        self, keyword: str, function: Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
+    ):
         self.add_goal_reward_fct(keyword, function)
         self.set_goal_reward_fct(keyword)
 
-    def add_goal_projection(self, keyword, function):
+    def add_goal_projection(
+        self, keyword: str, function: Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
+    ):
         self.goal_projections[keyword] = function
 
-    def set_goal_projection(self, keyword):
+    def set_goal_projection(self, keyword: str):
         self.compute_goal_projection = self.goal_projections.get(keyword)
 
-    def add_set_goal_projection(self, keyword, function):
+    def add_set_goal_projection(
+        self, keyword: str, function: Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
+    ):
         self.add_goal_projection(keyword, function)
         self.set_goal_projection(keyword)
 
-    def add_goal_is_success(self, keyword, function):
+    def add_goal_is_success(
+        self, keyword: str, function: Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
+    ):
         self.goal_is_success[keyword] = function
 
-    def set_goal_is_success(self, keyword):
+    def set_goal_is_success(self, keyword: str):
         self.compute_goal_is_success = self.goal_is_success.get(keyword)
 
-    def add_set_goal_is_success(self, keyword, function):
+    def add_set_goal_is_success(
+        self, keyword: str, function: Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
+    ):
         self.add_goal_is_success(keyword, function)
         self.set_goal_is_success(keyword)
