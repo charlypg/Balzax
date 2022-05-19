@@ -14,6 +14,11 @@ def gym_balls_env_goal_factory(
     num_envs: int = 1,
     seed: int = 0,
     backend: Optional[str] = None,
+    projection_fct: Tuple[
+        str, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]
+    ] = None,
+    reward_fct: Tuple[str, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]] = None,
+    success_fct: Tuple[str, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]] = None,
 ):
     gym.register(
         id=name,
@@ -27,6 +32,9 @@ def gym_balls_env_goal_factory(
             "num_envs": num_envs,
             "seed": seed,
             "backend": backend,
+            "projection_fct": projection_fct,
+            "reward_fct": reward_fct,
+            "success_fct": success_fct,
         },
     )
 
