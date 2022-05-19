@@ -10,7 +10,7 @@ class GymSingleBallsEnv(GymWrapper):
         self,
         obs_type: str = "position",
         num_balls: int = 4,
-        max_episode_steps: int = 10000,
+        max_episode_steps: int = 500,
         seed: int = 0,
         backend: Optional[str] = None,
     ):
@@ -28,7 +28,7 @@ class GymBallsEnv(GymVecWrapper):
         self,
         obs_type: str = "position",
         num_balls: int = 4,
-        max_episode_steps: int = 10000,
+        max_episode_steps: int = 500,
         num_envs: int = 1,
         seed: int = 0,
         backend: Optional[str] = None,
