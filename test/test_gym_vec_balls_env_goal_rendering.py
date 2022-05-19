@@ -29,13 +29,15 @@ OBS_TYPE = "position"
 NUM_ENVS = 1
 NUM_BALLS = 1
 SEED = 0
-MAX_TIMESTEP = 50
+MAX_EPISODE_STEPS = 50
 NB_ITER = 220
 PULSE = 2 * onp.pi / NB_ITER * onp.ones((NUM_ENVS, 1))
 
 COLOR = onp.array([[0, 0, 255], [255, 0, 0]], dtype=onp.int32)
 
-env = BallsEnvGoal(obs_type=OBS_TYPE, max_timestep=MAX_TIMESTEP, num_balls=NUM_BALLS)
+env = BallsEnvGoal(
+    obs_type=OBS_TYPE, max_episode_steps=MAX_EPISODE_STEPS, num_balls=NUM_BALLS
+)
 gym_env = GoalGymVecWrapper(env=env, num_envs=NUM_ENVS, seed=SEED)
 
 t0 = time()

@@ -24,6 +24,13 @@ def compute_similarity(image_a: jnp.ndarray, image_b: jnp.ndarray):
     return jnp.array([inter / union])
 
 
+def default_is_success(
+    achieved_goal: jnp.ndarray, desired_goal: jnp.ndarray
+) -> jnp.ndarray:
+    """Computes a boolean indicating whether the goal is reached or not"""
+    return jnp.array([False], dtype=jnp.bool_)
+
+
 class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
     """Balls RL environment with goal specification"""
 
@@ -32,18 +39,26 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         obs_type: str = "position",
         num_balls: int = 4,
         goal_projection: str = "identity",
+        goal_success: str = "default",
         max_episode_steps: int = 500,
     ):
         BallsBase.__init__(self, obs_type=obs_type, num_balls=num_balls)
 
-        self.goal_reward_fcts = {
-            "position": compute_goal_l2_dist_2,
-            "image": compute_similarity,
-        }
-        self.compute_goal_reward = self.goal_reward_fcts.get(self.obs_type)
+        self.goal_reward_fcts = dict()
+        self.compute_goal_reward = None
+        self.add_goal_reward_fct("position", compute_goal_l2_dist_2)
+        self.add_goal_reward_fct("image", compute_similarity)
+        self.set_goal_reward_fct(obs_type)
 
-        self.goal_projections = {"identity": lambda obs: obs}
-        self.compute_goal_projection = self.goal_projections[goal_projection]
+        self.goal_projections = dict()
+        self.compute_goal_projection = None
+        self.add_goal_projection("identity", lambda obs: obs)
+        self.set_goal_projection(goal_projection)
+
+        self.goal_is_success = dict()
+        self.compute_goal_is_success = None
+        self.add_goal_is_success("default", default_is_success)
+        self.set_goal_is_success(goal_success)
 
         self.max_episode_steps = jnp.array(max_episode_steps, dtype=jnp.int32)
 
@@ -63,7 +78,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
 
     def compute_is_success(self, achieved_goal, desired_goal) -> jnp.ndarray:
         """Computes a boolean indicating whether the goal is reached or not"""
-        return jnp.array([False], dtype=jnp.bool_)
+        return self.compute_goal_is_success(achieved_goal, desired_goal)
 
     def set_desired_goal(
         self, goal_env_state: GoalEnvState, desired_goal: jnp.ndarray
@@ -192,3 +207,33 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
     @property
     def action_high(self):
         return 1.0
+
+    def add_goal_reward_fct(self, keyword, function):
+        self.goal_reward_fcts[keyword] = function
+
+    def set_goal_reward_fct(self, keyword):
+        self.compute_goal_reward = self.goal_reward_fcts.get(keyword)
+
+    def add_set_goal_reward_fct(self, keyword, function):
+        self.add_goal_reward_fct(keyword, function)
+        self.set_goal_reward_fct(keyword)
+
+    def add_goal_projection(self, keyword, function):
+        self.goal_projections[keyword] = function
+
+    def set_goal_projection(self, keyword):
+        self.compute_goal_projection = self.goal_projections.get(keyword)
+
+    def add_set_goal_projection(self, keyword, function):
+        self.add_goal_projection(keyword, function)
+        self.set_goal_projection(keyword)
+
+    def add_goal_is_success(self, keyword, function):
+        self.goal_is_success[keyword] = function
+
+    def set_goal_is_success(self, keyword):
+        self.compute_goal_is_success = self.goal_is_success.get(keyword)
+
+    def add_set_goal_is_success(self, keyword, function):
+        self.add_goal_is_success(keyword, function)
+        self.set_goal_is_success(keyword)

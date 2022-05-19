@@ -8,7 +8,7 @@ from balzax.balls_env_goal import BallsEnvGoal
 print("TEST : BallsEnvGoal(obs_type='position')")
 print()
 
-env = BallsEnvGoal(obs_type="position", max_timestep=500)
+env = BallsEnvGoal(obs_type="position", max_episode_steps=500)
 jit_env_reset_done = jax.jit(env.reset_done)
 jit_env_reset = jax.jit(env.reset)  # env.reset
 jit_env_step = jax.jit(env.step)  # env.step

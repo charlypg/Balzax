@@ -23,11 +23,11 @@ def plot_vect_goalobs(i: int, vect_goalobs: dict, num_goalobs: int):
 OBS_TYPE = "image"
 NUM_ENVS = 3
 SEED = 0
-MAX_TIMESTEP = 5
+MAX_EPISODE_STEPS = 5
 NB_ITER = 21
 PULSE = 2 * onp.pi / NB_ITER * onp.ones((NUM_ENVS, 1))
 
-env = BallsEnvGoal(obs_type=OBS_TYPE, max_timestep=MAX_TIMESTEP)
+env = BallsEnvGoal(obs_type=OBS_TYPE, max_episode_steps=MAX_EPISODE_STEPS)
 gym_env = GoalGymVecWrapper(env=env, num_envs=NUM_ENVS, seed=SEED)
 
 t0 = time()

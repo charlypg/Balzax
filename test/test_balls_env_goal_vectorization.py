@@ -25,7 +25,7 @@ def plot_vect_goalobs(i: int, vect_goalobs: dict, num_goalobs: int):
 OBS_TYPE = "image"
 SEED = 0
 NUM_ENV = 3
-MAX_TIMESTEP = 5
+MAX_EPISODE_STEPS = 5
 
 NB_ITER_1 = 1
 NB_ITER_2 = 21
@@ -37,7 +37,7 @@ ACTION_1 = jnp.ones((NUM_ENV, 1)) / 2.0
 key = jax.random.PRNGKey(SEED)
 keys = jax.random.split(key, num=NUM_ENV)
 
-env = BallsEnvGoal(obs_type=OBS_TYPE, max_timestep=MAX_TIMESTEP)
+env = BallsEnvGoal(obs_type=OBS_TYPE, max_episode_steps=MAX_EPISODE_STEPS)
 
 vmap_env_reset = jax.jit(jax.vmap(env.reset))
 vmap_env_reset_done = jax.jit(jax.vmap(env.reset_done))
