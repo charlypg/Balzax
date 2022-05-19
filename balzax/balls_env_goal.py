@@ -32,7 +32,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         obs_type: str = "position",
         num_balls: int = 4,
         goal_projection: str = "identity",
-        max_timestep: int = 10000,
+        max_episode_steps: int = 500,
     ):
         BallsBase.__init__(self, obs_type=obs_type, num_balls=num_balls)
 
@@ -45,7 +45,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         self.goal_projections = {"identity": lambda obs: obs}
         self.compute_goal_projection = self.goal_projections[goal_projection]
 
-        self.max_timestep = jnp.array(max_timestep, dtype=jnp.int32)
+        self.max_episode_steps = jnp.array(max_episode_steps, dtype=jnp.int32)
 
     @property
     def goal_low(self):
@@ -175,7 +175,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         done_b = BallsBase.done_base(self, new_balls)
 
         is_success = self.compute_is_success(new_achieved_goal, desired_goal)
-        truncation = new_timestep >= self.max_timestep
+        truncation = new_timestep >= self.max_episode_steps
         metrics = {
             "is_success": is_success,
             "truncation": truncation & jnp.logical_not(is_success),

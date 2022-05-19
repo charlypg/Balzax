@@ -16,10 +16,13 @@ class BallsEnv(BalzaxEnv, BallsBase):
     """Balls RL environment"""
 
     def __init__(
-        self, obs_type: str = "position", num_balls: int = 4, max_timestep: int = 10000
+        self,
+        obs_type: str = "position",
+        num_balls: int = 4,
+        max_episode_steps: int = 500,
     ):
         BallsBase.__init__(self, obs_type=obs_type, num_balls=num_balls)
-        self.max_timestep = jnp.array(max_timestep, dtype=jnp.int32)
+        self.max_episode_steps = jnp.array(max_episode_steps, dtype=jnp.int32)
 
     @property
     def observation_low(self):
@@ -80,7 +83,7 @@ class BallsEnv(BalzaxEnv, BallsBase):
         reward = self.compute_reward(env_state.game_state, action, new_balls)
         new_timestep = env_state.timestep + 1
         done_b = BallsBase.done_base(self, new_balls)
-        truncation = new_timestep >= self.max_timestep
+        truncation = new_timestep >= self.max_episode_steps
         metrics = {"truncation": truncation}
         done = truncation | done_b
         return EnvState(

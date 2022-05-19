@@ -10,15 +10,15 @@ class GymSingleBallsEnv(GymWrapper):
         self,
         obs_type: str = "position",
         num_balls: int = 4,
-        max_timestep: int = 10000,
+        max_episode_steps: int = 10000,
         seed: int = 0,
         backend: Optional[str] = None,
     ):
         env = BallsEnv(
-            obs_type=obs_type, num_balls=num_balls, max_timestep=max_timestep
+            obs_type=obs_type, num_balls=num_balls, max_episode_steps=max_episode_steps
         )
         super().__init__(env=env, seed=seed, backend=backend)
-        self.max_episode_steps = max_timestep
+        self.max_episode_steps = max_episode_steps
 
 
 class GymBallsEnv(GymVecWrapper):
@@ -28,13 +28,13 @@ class GymBallsEnv(GymVecWrapper):
         self,
         obs_type: str = "position",
         num_balls: int = 4,
-        max_timestep: int = 10000,
+        max_episode_steps: int = 10000,
         num_envs: int = 1,
         seed: int = 0,
         backend: Optional[str] = None,
     ):
         env = BallsEnv(
-            obs_type=obs_type, num_balls=num_balls, max_timestep=max_timestep
+            obs_type=obs_type, num_balls=num_balls, max_episode_steps=max_episode_steps
         )
         super().__init__(env=env, num_envs=num_envs, seed=seed, backend=backend)
-        self.max_episode_steps = max_timestep
+        self.max_episode_steps = max_episode_steps
