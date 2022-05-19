@@ -31,7 +31,7 @@ class BalzaxEnv(abc.ABC):
         """Run a timestep of the environment"""
 
     @abc.abstractmethod
-    def reset_done(self, env_state: EnvState, key: jnp.ndarray) -> EnvState:
+    def reset_done(self, env_state: EnvState) -> EnvState:
         """Resets environment when done"""
 
     def render(self, env_state: EnvState):
@@ -120,7 +120,7 @@ class BalzaxGoalEnv(abc.ABC):
         """Run a timestep of the environment"""
 
     @abc.abstractmethod
-    def reset_done(self, env_state: GoalEnvState, key: jnp.ndarray) -> GoalEnvState:
+    def reset_done(self, env_state: GoalEnvState) -> GoalEnvState:
         """Resets environment when done"""
 
     def render(self, env_state: GoalEnvState):
