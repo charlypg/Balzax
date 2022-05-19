@@ -24,26 +24,6 @@ class BallsEnv(BalzaxEnv, BallsBase):
         BallsBase.__init__(self, obs_type=obs_type, num_balls=num_balls)
         self.max_episode_steps = jnp.array(max_episode_steps, dtype=jnp.int32)
 
-    @property
-    def observation_low(self):
-        return 0.0
-
-    @property
-    def observation_high(self):
-        return 1.0
-
-    @property
-    def action_shape(self):
-        return (1,)
-
-    @property
-    def action_low(self):
-        return -1.0
-
-    @property
-    def action_high(self):
-        return 1.0
-
     def render(self, env_state: EnvState):
         """Returns an image of the scene"""
         return BallsBase.get_image(self, env_state.game_state)
@@ -95,3 +75,23 @@ class BallsEnv(BalzaxEnv, BallsBase):
             game_state=new_balls,
             metrics=metrics,
         )
+
+    @property
+    def observation_low(self):
+        return 0.0
+
+    @property
+    def observation_high(self):
+        return 1.0
+
+    @property
+    def action_shape(self):
+        return (1,)
+
+    @property
+    def action_low(self):
+        return -1.0
+
+    @property
+    def action_high(self):
+        return 1.0
