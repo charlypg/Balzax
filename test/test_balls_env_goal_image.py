@@ -21,7 +21,7 @@ def plot_goalobs(i, goalobs: dict):
 print("TEST : BallsEnvGoal(obs_type='image')")
 print()
 
-env = BallsEnvGoal(obs_type="image", num_balls=7, max_episode_steps=50)
+env = BallsEnvGoal(obs_type="image", num_balls=3, max_episode_steps=50)
 
 jit_env_reset_done = jax.jit(env.reset_done)
 jit_env_reset = jax.jit(env.reset)  # env.reset

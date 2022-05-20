@@ -10,7 +10,13 @@ from balzax.image_generation import balls_to_one_image
 
 
 class BallsBase:
+    NUM_BALLS_MAX = 4
+    RAD_MIN = 0.035
+    RAD_MAX = 0.065
+    RAD_BASE = jnp.linspace(RAD_MIN, RAD_MAX, NUM_BALLS_MAX)
+
     def __init__(self, obs_type: str = "position", num_balls: int = 4):
+        assert num_balls in range(1, 1 + BallsBase.NUM_BALLS_MAX)
         self.num_balls = num_balls
         self.length = 1.0
         self.x_limit = self.length
@@ -20,7 +26,8 @@ class BallsBase:
         self.r_max = compute_r(
             epsilon=self.epsilon, N=self.nb_randsamp, n=self.num_balls, L=self.length
         )
-        self.init_radius = self.r_max * jnp.ones((self.num_balls,))
+        assert BallsBase.RAD_MAX <= self.r_max
+        self.init_radius = BallsBase.RAD_BASE[: self.num_balls]
 
         self.colors = 1.0 * jnp.ones((self.num_balls,), dtype=jnp.float32)
         self.image_dim = 224

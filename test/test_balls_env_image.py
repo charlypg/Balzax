@@ -8,7 +8,10 @@ from balzax.balls_env import BallsEnv
 print("TEST 1 : BallsEnv(obs_type='image')")
 print()
 
-env = BallsEnv(obs_type="image", num_balls=7, max_episode_steps=500)
+env = BallsEnv(obs_type="image", num_balls=4, max_episode_steps=500)
+env.init_radius = jnp.linspace(
+    0.035, 0.065, 4
+)  # jnp.arange(1,4+1)*0.1/4 #jnp.arange(1,4+1)*0.1/4
 jit_env_reset_done = jax.jit(env.reset_done)
 jit_env_reset = jax.jit(env.reset)  # env.reset
 jit_env_step = jax.jit(env.step)  # env.step
