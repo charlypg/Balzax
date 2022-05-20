@@ -8,11 +8,11 @@ from balzax.wrapper import GymVecWrapper
 OBS_TYPE = "image"
 NUM_ENVS = 3
 SEED = 0
-MAX_TIMESTEP = 3
+MAX_EPISODE_STEPS = 3
 NB_ITER = 22
 PULSE = 2 * onp.pi / NB_ITER * onp.ones((NUM_ENVS, 1))
 
-env = BallsEnv(obs_type=OBS_TYPE, max_timestep=MAX_TIMESTEP)
+env = BallsEnv(obs_type=OBS_TYPE, max_episode_steps=MAX_EPISODE_STEPS)
 gym_env = GymVecWrapper(env=env, num_envs=NUM_ENVS, seed=SEED)
 
 t0 = time()

@@ -8,7 +8,7 @@ from time import time
 from balzax.balls_env import BallsEnv
 
 OBS_TYPE = "image"
-MAX_TIMESTEPS = 3
+MAX_EPSISODE_STEPS = 3
 SEED = 0
 NUM_ENV = 3
 
@@ -22,7 +22,7 @@ keys = jax.random.split(key, num=NUM_ENV)
 
 # print(keys)
 
-env = BallsEnv(obs_type=OBS_TYPE, max_timestep=MAX_TIMESTEPS)
+env = BallsEnv(obs_type=OBS_TYPE, max_episode_steps=MAX_EPSISODE_STEPS)
 
 vmap_env_reset_done = jax.jit(jax.vmap(env.reset_done))
 vmap_env_reset = jax.jit(jax.vmap(env.reset))  # jax.vmap(env.reset)

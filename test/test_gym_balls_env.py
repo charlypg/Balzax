@@ -6,7 +6,7 @@ from balzax.balls_env import BallsEnv
 from balzax.wrapper import GymWrapper
 
 
-env = BallsEnv(obs_type="image", max_timestep=500)
+env = BallsEnv(obs_type="image", max_episode_steps=500)
 gym_env = GymWrapper(env=env, seed=0)
 
 NB_ITER = 200
