@@ -10,7 +10,7 @@ env = BallsEnv(obs_type="image", max_episode_steps=500)
 gym_env = GymWrapper(env=env, seed=0)
 
 NB_ITER = 200
-PULSE = onp.array([2 * onp.pi / NB_ITER])
+PULSE = onp.array(2 * onp.pi / NB_ITER)
 
 t0 = time()
 obs = gym_env.reset()
@@ -23,7 +23,8 @@ info_list = []
 
 t0 = time()
 for i in range(NB_ITER):
-    action = onp.sin(PULSE * i)
+    angle = onp.sin(PULSE * i)
+    action = onp.array([onp.cos(-angle), onp.sin(-angle)])
     obs, reward, done, info = gym_env.step(action)
     reward_list.append(reward)
     done_list.append(done)

@@ -39,7 +39,10 @@ info_list = []
 
 t0 = time()
 for i in range(NB_ITER):
-    action = onp.sin(PULSE * i)
+    angle = onp.sin(PULSE * i)
+    cos = onp.cos(angle)
+    sin = onp.sin(angle)
+    action = onp.concatenate((cos, sin), axis=1)
     obs, reward, done, info = gym_env.step(action)
     info_list.append(info)
     obs = gym_env.reset_done()
