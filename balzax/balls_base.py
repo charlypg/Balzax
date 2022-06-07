@@ -75,8 +75,7 @@ class BallsBase:
 
     def action_to_velocity(self, action: jnp.ndarray) -> jnp.ndarray:
         """Returns agent ball velocity from action vector"""
-        velocity = clip_unit_circle(action)
-        return velocity
+        return clip_unit_circle(action)
 
     def get_dpos(self, velocity: jnp.ndarray) -> jnp.ndarray:
         """Returns a position variation from velocity"""
