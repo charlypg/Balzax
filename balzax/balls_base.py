@@ -14,6 +14,7 @@ class BallsBase:
     RAD_MIN = 0.035
     RAD_MAX = 0.065
     RAD_BASE = jnp.linspace(RAD_MIN, RAD_MAX, NUM_BALLS_MAX)
+    VELOCITY_GAIN = 0.02
 
     def __init__(self, obs_type: str = "position", num_balls: int = 4):
         assert num_balls in range(1, 1 + BallsBase.NUM_BALLS_MAX)
@@ -65,20 +66,24 @@ class BallsBase:
         self.obs_fcts = {"position": self.get_pos, "image": self.get_image}
         self.get_obs = self.obs_fcts.get(self.obs_type)
 
-    def apply_update(
-        self, balls: Ball, agent_pos_var: jnp.ndarray = jnp.zeros((2,))
-    ) -> Ball:
-        """Update positions of balls"""
-        new_balls = update_agent_pos(balls, agent_pos_var)
+    def action_to_velocity(self, action: jnp.ndarray) -> jnp.ndarray:
+        """Returns agent ball velocity from action vector"""
+        act = action.squeeze(-1)
+        angle = jnp.pi * act
+        return jnp.array([jnp.cos(angle), jnp.sin(angle)])
+
+    def get_dpos(self, velocity: jnp.ndarray) -> jnp.ndarray:
+        """Returns a position variation from velocity"""
+        return BallsBase.VELOCITY_GAIN * velocity
+
+    def step_base(self, balls: Ball, action: jnp.ndarray) -> Ball:
+        """Performs a game step"""
+        velocity = self.action_to_velocity(action)
+        dpos = self.get_dpos(velocity)
+        new_balls = update_agent_pos(balls, dpos)
         new_balls = self.solve_bb_collisions(new_balls)
         new_balls = self.solve_bw_collisions(new_balls)
         return new_balls
-
-    def get_dpos(self, action: jnp.ndarray) -> jnp.ndarray:
-        """Returns a position variation from a velocity angle."""
-        act = action.squeeze(-1)
-        angle = jnp.pi * act
-        return 0.02 * jnp.array([jnp.cos(angle), jnp.sin(angle)])
 
     def reset_base(self, key):
         """Resets the game : new ball positions and new random key"""
@@ -91,12 +96,6 @@ class BallsBase:
             N=self.nb_randsamp,
         )
         return new_balls, new_key
-
-    def step_base(self, balls: Ball, action: jnp.ndarray) -> Ball:
-        """Performs a game step"""
-        dpos = self.get_dpos(action)
-        new_balls = self.apply_update(balls, dpos)
-        return new_balls
 
     def done_base(self, balls: Ball) -> jnp.ndarray:
         """Returns whether the game state is terminal or not"""
