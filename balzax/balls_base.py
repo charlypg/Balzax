@@ -1,3 +1,4 @@
+import jax
 import jax.numpy as jnp
 from functools import partial
 
@@ -7,6 +8,12 @@ from balzax.structures import update_agent_pos, update_bb, update_bw
 from balzax.structures import out
 from balzax.random_reset_base import compute_r, random_reset
 from balzax.image_generation import balls_to_one_image
+
+
+def clip_unit_circle(u: jnp.ndarray) -> jnp.ndarray:
+    den = jnp.linalg.norm(u)
+    den = 1 + jax.nn.relu(den - 1)
+    return u / den
 
 
 class BallsBase:
@@ -68,9 +75,9 @@ class BallsBase:
 
     def action_to_velocity(self, action: jnp.ndarray) -> jnp.ndarray:
         """Returns agent ball velocity from action vector"""
-        act = action.squeeze(-1)
-        angle = jnp.pi * act
-        return jnp.array([jnp.cos(angle), jnp.sin(angle)])
+        velocity = action.squeeze(0)
+        velocity = clip_unit_circle(velocity)
+        return velocity
 
     def get_dpos(self, velocity: jnp.ndarray) -> jnp.ndarray:
         """Returns a position variation from velocity"""
