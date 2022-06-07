@@ -6,6 +6,12 @@ from time import time
 from balzax.balls_env_goal import BallsEnvGoal
 
 
+@jax.jit
+def vel(pulse, i):
+    angle = jnp.sin(pulse * i)
+    return jnp.array([jnp.cos(angle), jnp.sin(angle)])
+
+
 def plot_goalobs(i, goalobs: dict):
     plt.figure(i)
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
@@ -31,7 +37,7 @@ key = jax.random.PRNGKey(0)
 nb_iter_1 = 1
 nb_iter_2 = 200
 assert nb_iter_1 < nb_iter_2
-pulse = jnp.array([2 * jnp.pi / 200])
+pulse = jnp.array(2 * jnp.pi / 200)
 goalobs_list = []
 metrics_list = []
 
@@ -54,7 +60,7 @@ metrics_list.append(env_state.metrics)
 
 
 t0 = time()
-env_state = jit_env_step(env_state, jnp.array([0.0]))
+env_state = jit_env_step(env_state, jnp.zeros((2,)))
 print("Time of first step (jit+exec) : {}s".format(time() - t0))
 print("State of the environment : Timestep 1")
 print(env_state)
@@ -65,7 +71,7 @@ metrics_list.append(env_state.metrics)
 
 t0 = time()
 for i in range(nb_iter_1):
-    env_state = jit_env_step(env_state, jnp.sin(pulse * i))
+    env_state = jit_env_step(env_state, vel(pulse, i))
     metrics_list.append(env_state.metrics)
     env_state = jit_env_reset_done(env_state)
     goalobs_list.append(env_state.goalobs)
@@ -77,7 +83,7 @@ print(
 
 t0 = time()
 for i in range(1, nb_iter_2):
-    env_state = jit_env_step(env_state, jnp.sin(pulse * i))
+    env_state = jit_env_step(env_state, vel(pulse, i))
     metrics_list.append(env_state.metrics)
     env_state = jit_env_reset_done(env_state)
     goalobs_list.append(env_state.goalobs)

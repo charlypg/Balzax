@@ -5,6 +5,13 @@ from time import time
 
 from balzax.balls_env_goal import BallsEnvGoal
 
+
+@jax.jit
+def vel(pulse, i):
+    angle = jnp.sin(pulse * i)
+    return jnp.array([jnp.cos(angle), jnp.sin(angle)])
+
+
 print("TEST : BallsEnvGoal(obs_type='position')")
 print()
 
@@ -17,7 +24,7 @@ key = jax.random.PRNGKey(0)
 nb_iter_1 = 1
 nb_iter_2 = 10_000
 assert nb_iter_1 < nb_iter_2
-pulse = jnp.array([2 * jnp.pi / 200])
+pulse = jnp.array(2 * jnp.pi / 200)
 image_list = []
 
 t0 = time()
@@ -38,7 +45,7 @@ image_list.append(env.get_image(env_state.game_state))
 
 
 t0 = time()
-env_state = jit_env_step(env_state, jnp.array([0.0]))
+env_state = jit_env_step(env_state, jnp.zeros((2,)))
 print("Time of first step (jit+exec) : {}s".format(time() - t0))
 print("State of the environment : Timestep 1")
 print(env_state)
@@ -48,7 +55,7 @@ image_list.append(env.get_image(env_state.game_state))
 
 t0 = time()
 for i in range(nb_iter_1):
-    env_state = jit_env_step(env_state, jnp.sin(pulse * i))
+    env_state = jit_env_step(env_state, vel(pulse, i))
     env_state = jit_env_reset_done(env_state)
     # image_list.append(env.get_image(env_state.game_state))
 print(
@@ -59,7 +66,7 @@ print(
 
 t0 = time()
 for i in range(nb_iter_2):
-    env_state = jit_env_step(env_state, jnp.sin(pulse * i))
+    env_state = jit_env_step(env_state, vel(pulse, i))
     env_state = jit_env_reset_done(env_state)
     # image_list.append(env.get_image(env_state.game_state))
 print(
