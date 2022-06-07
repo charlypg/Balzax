@@ -7,6 +7,14 @@ from time import time
 
 from balzax.balls_env import BallsEnv
 
+
+def vel(pulse, i):
+    angle = jnp.sin(pulse * i)
+    return jnp.array([jnp.cos(angle), jnp.sin(angle)])
+
+
+vmap_vel = jax.jit(jax.vmap(vel))
+
 OBS_TYPE = "image"
 MAX_EPSISODE_STEPS = 3
 SEED = 0
@@ -14,8 +22,8 @@ NUM_ENV = 3
 
 NB_ITER = 21
 
-ACTION_0 = jnp.zeros((NUM_ENV, 1))
-ACTION_1 = jnp.ones((NUM_ENV, 1)) / 2.0
+ACTION_0 = jnp.zeros((NUM_ENV, 2))
+ACTION_1 = jnp.ones((NUM_ENV, 2))
 
 key = jax.random.PRNGKey(SEED)
 keys = jax.random.split(key, num=NUM_ENV)
@@ -25,8 +33,8 @@ keys = jax.random.split(key, num=NUM_ENV)
 env = BallsEnv(obs_type=OBS_TYPE, max_episode_steps=MAX_EPSISODE_STEPS)
 
 vmap_env_reset_done = jax.jit(jax.vmap(env.reset_done))
-vmap_env_reset = jax.jit(jax.vmap(env.reset))  # jax.vmap(env.reset)
-vmap_env_step = jax.jit(jax.vmap(env.step))  # jax.vmap(env.step)
+vmap_env_reset = jax.jit(jax.vmap(env.reset))
+vmap_env_step = jax.jit(jax.vmap(env.step))
 
 obs_list = []
 
@@ -81,10 +89,10 @@ for _ in range(NB_ITER):
 print("{0} iterations in {1}s".format(NB_ITER, time() - t0))
 print()
 
-pulse = 2 * jnp.pi / NB_ITER * jnp.ones((NUM_ENV, 1))
+pulse = 2 * jnp.pi / NB_ITER * jnp.ones((NUM_ENV,))
 t0 = time()
 for i in range(NB_ITER):
-    env_states = vmap_env_step(env_states, jnp.sin(pulse * i))
+    env_states = vmap_env_step(env_states, vmap_vel(pulse, i * jnp.ones((NUM_ENV,))))
     env_states = vmap_env_reset_done(env_states)
     obs_list.append(env_states.obs)
 print("{0} iterations in {1}s".format(NB_ITER, time() - t0))

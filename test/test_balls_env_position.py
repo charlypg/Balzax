@@ -5,17 +5,25 @@ from time import time
 
 from balzax.balls_env import BallsEnv
 
+
+@jax.jit
+def vel(pulse, i):
+    angle = jnp.sin(pulse * i)
+    return jnp.array([jnp.cos(angle), jnp.sin(angle)])
+
+
 print("TEST 1 : BallsEnv(obs_type='position')")
 print()
 
 env = BallsEnv(obs_type="position", max_episode_steps=500)
+
 jit_env_reset_done = jax.jit(env.reset_done)
 jit_env_reset = jax.jit(env.reset)  # env.reset
 jit_env_step = jax.jit(env.step)  # env.step
 
 key = jax.random.PRNGKey(0)
 nb_iter = 10_000
-pulse = jnp.array([2 * jnp.pi / 200])
+pulse = jnp.array(2 * jnp.pi / 200)
 image_list = []
 
 t0 = time()
@@ -45,8 +53,8 @@ print()
 image_list.append(env.get_image(env_state.game_state))
 
 t0 = time()
-for i in range(nb_iter):
-    env_state = jit_env_step(env_state, jnp.sin(pulse * i))
+for i in jnp.arange(nb_iter):
+    env_state = jit_env_step(env_state, vel(pulse, i))
     env_state = jit_env_reset_done(env_state)
     # image_list.append(env.get_image(env_state.game_state))
 
