@@ -199,7 +199,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
 
     @property
     def action_shape(self):
-        return (1, 2)
+        return (2,)
 
     @property
     def action_low(self):
