@@ -56,6 +56,11 @@ For each step, the ***dynamics of the environment*** follow the substeps below. 
 
 #### Rendering
 
-After 1 500 000 learning steps, the following result is obtained. The balls are in blue while the goal is in red.
+After ***1 500 000 learning steps***, the following result is obtained. The balls are in blue while the goal is in red.
 
 https://user-images.githubusercontent.com/91844362/174491520-8bf9e437-6964-4cae-a90a-182c78f81844.mp4
+
+
+After ***6 000 000 learning steps***:
+
+https://user-images.githubusercontent.com/91844362/175326039-496a98c2-0873-4bd0-adb9-d0293c643ba5.mp4
