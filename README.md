@@ -1,3 +1,6 @@
+![licence](https://img.shields.io/badge/License-BSD_3--Clause-green.svg)
+[![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 # Balzax
 Game environments for reinforcement learning and open-ended learning composed of balls moving other balls and coded in JAX. 
 
