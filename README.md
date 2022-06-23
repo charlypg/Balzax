@@ -22,14 +22,14 @@ Then install *Balzax dependencies* :
 - numpy
 - matplotlib
 
-Finally install *Balzax* :
+Finally, install *Balzax* :
 ```
 pip install git+https://github.com/charlypg/Balzax
 ```
 
 
 ## *Balzax* environments
-Originally, there are two JAX environments (state externally managed) : the balls environments ***BallsEnv*** and ***BallsEnvGoal*** (*goal-conditioned RL*), but ***Balzax*** also proposes ***Gym* wrappers** so as to apply most of *state-of-the-art* algorithms on it. In the implemented *Gym* wrappers, the environments vectorization is managed internally. *Balzax* also allows to implement custom environments thanks to the *abstract classes* ***BalzaxEnv*** and ***BalzaxGoalEnv***. 
+Originally, there are two JAX environments (state externally managed) : the *balls environments* ***BallsEnv*** and ***BallsEnvGoal*** (*goal-conditioned RL*), but ***Balzax*** also proposes ***Gym* wrappers** so as to apply most of *state-of-the-art* algorithms on it. In the implemented *Gym* wrappers, the environments vectorization is managed internally. *Balzax* also allows to implement custom environments thanks to the *abstract classes* ***BalzaxEnv*** and ***BalzaxGoalEnv***. 
 
 ### Balls environments 
 
@@ -37,11 +37,11 @@ The environment is a window in which there are several balls (disks). One ball c
 
 The ***observations*** can either be the balls *positions* or an *image* of the scene. The ***action*** corresponds to a *speed command*. If it exist, the ***achieved goal*** is calculated from the observation thanks to a *mapping from the observation space to the goal space*. The ***reward*** and ***success*** functions can also be defined externally.
 
-For each step, the ***dynamics of the environment*** follow the substeps :  
+For each step, the ***dynamics of the environment*** follow the substeps below. The agent controls directly the speed of the first ball and the collisions are sequentially managed and directly modify the objects positions.
 
 - ***Agent control :*** $$x_{t+1, \text{agent}}' = x_{t, \text{agent}} + K . g(a_t)$$ Where $a_t$ is the action at timestep $t$, $x_{t, \text{agent}}$ the position of the agent at time $t$, $x_{t+1, \text{agent}}'$ the next position if there is no collision after, $K$ is a constant gain, $g$ is the function transforming the action in a velocity. In the current version, $g$ forces the speed to stay in the unit circle : $$g(v) = \frac{v}{1 + \text{relu}\left(||v|| - 1\right)}$$
-- ***Ball-ball collision :*** *Coming soon*
-- ***Ball-wall collision :*** *Coming soon*
+- ***Ball-ball collision :*** For $0 \le i \le N_{\text{balls}}-1$ and $i+1 \le j \le N_{\text{balls}}-1$ : $$p_{ij} \leftarrow \text{relu}\left(r_i + r_j - ||x_j - x_i||\right) . \frac{x_j - x_i}{||x_j - x_i||}$$ $$x_i \leftarrow x_i - p_{ij}/2$$ $$x_j \leftarrow x_j + p_{ij}/2$$
+- ***Ball-wall collision :*** *The balls are forced to stay in the window* by a **continuous and piecewise linear function** $W$ : $$x \leftarrow W(x)$$
 
 ## Examples
 
