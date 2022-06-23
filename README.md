@@ -25,7 +25,7 @@ conda env create -f environment_cpu.yaml
 
 #### Environment
 - **Two balls :** One *agent*, one *tool* (ball to be pushed)
-- **Goal space :** $[0, 1]^2$ tool position $(x_1,y_1)$
+- **Goal space :** $(x_1,y_1) \in [0, 1]^2$ tool position
 - **Observation space :** $[0, 1]^4$ positions of both $(x_0, y_0, x_1,y_1)$
 - **Action space :** $[-1, 1]^2$ speed command $(v_x, v_y)$
 - **Sparse reward :** $r(s_t^{\text{tool}}, a_t, g) = \left[ || s_t^{\text{tool}} - g || \le \epsilon  \right]$
