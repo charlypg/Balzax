@@ -13,7 +13,7 @@ conda env create -f environment_cpu.yaml
 *Coming soon...*
 
 
-## Environments
+## *Balzax* environments
 Originally, there are two JAX environments (state externally managed) : the balls environments ***BallsEnv*** and ***BallsEnvGoal*** (*goal-conditioned RL*), but ***Balzax*** also proposes ***Gym* wrappers** so as to apply most of *state-of-the-art* algorithms on it. In the implemented *Gym* wrappers, the environments vectorization is managed internally. *Balzax* also allows to implement custom environments thanks to the *abstract classes* ***BalzaxEnv*** and ***BalzaxGoalEnv***. 
 
 ### Balls environments 
@@ -22,8 +22,11 @@ The environment is a window in which there are several balls (disks). One ball c
 
 The ***observations*** can either be the balls *positions* or an *image* of the scene. The ***action*** corresponds to a *speed command*. If it exist, the ***achieved goal*** is calculated from the observation thanks to a *mapping from the observation space to the goal space*. The ***reward*** and ***success*** functions can also be defined externally.
 
-#### Dynamics
-*Coming soon*
+For each step, the ***dynamics of the environment*** follow the substeps :  
+
+- ***Agent control :*** $$x_{t+1, \text{agent}}' = x_{t, \text{agent}} + K . g(a_t)$$ Where $a_t$ is the action at timestep $t$, $x_{t, \text{agent}}$ the position of the agent at time $t$, $x_{t+1, \text{agent}}'$ the next position if there is no collision after, $K$ is a constant gain, $g$ is the function transforming the action in a velocity. In the current version, $g$ forces the speed to stay in the unit circle : $$g(v) = \frac{v}{1 + \text{relu}\left(||v|| - 1\right)}$$
+- ***Ball-ball collision :*** *Coming soon*
+- ***Ball-wall collision :*** *Coming soon*
 
 ## Examples
 
@@ -38,6 +41,6 @@ The ***observations*** can either be the balls *positions* or an *image* of the 
 
 #### Rendering
 
-After 1 500 000 learning steps, the following result is obtained : 
+After 1 500 000 learning steps, the following result is obtained. The balls are in blue while the goal is in red.
 
 https://user-images.githubusercontent.com/91844362/174491520-8bf9e437-6964-4cae-a90a-182c78f81844.mp4
