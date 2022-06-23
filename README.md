@@ -1,5 +1,5 @@
 # Balzax
-Game environment for reinforcement learning and open-ended learning composed of balls moving other balls and coded in JAX. 
+Game environments for reinforcement learning and open-ended learning composed of balls moving other balls and coded in JAX. 
 
 ## Installation
 
@@ -12,10 +12,6 @@ conda env create -f environment_cpu.yaml
 ```
 
 ### GPU
-
-*Coming soon...*
-
-## Environments
 
 *Coming soon...*
 
