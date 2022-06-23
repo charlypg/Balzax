@@ -1,4 +1,4 @@
-name: balzax
+name: balzax_cpu
 channels:
   - defaults
   - conda-forge
