@@ -23,7 +23,7 @@ conda env create -f environment_cpu.yaml
 
 ### 1. Learning to push a ball to a desired position thanks to SAC and HER
 
-#### Environment
+#### Environment (goal-conditioned)
 - **Two balls :** One *agent*, one *tool* (ball to be pushed)
 - **Goal space :** $(x_1,y_1) \in [0, 1]^2$ tool position
 - **Observation space :** $(x_0, y_0, x_1,y_1) \in [0, 1]^4$ positions of both
@@ -32,6 +32,6 @@ conda env create -f environment_cpu.yaml
 
 #### Rendering
 
-After $1\,500\,000$ learning steps, the following result is obtained : 
+After 1 500 000 learning steps, the following result is obtained : 
 
 https://user-images.githubusercontent.com/91844362/174491520-8bf9e437-6964-4cae-a90a-182c78f81844.mp4
