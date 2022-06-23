@@ -15,7 +15,14 @@ conda env create -f environment_cpu.yaml
 
 *Coming soon...*
 
+## Environments
+
+*Coming soon...*
+
 ## Examples
+
+### Learning to push a ball to a desired position thanks to SAC and HER
 
 https://user-images.githubusercontent.com/91844362/174491520-8bf9e437-6964-4cae-a90a-182c78f81844.mp4
 
+test : $x = 2$
