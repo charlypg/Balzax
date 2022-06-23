@@ -7,10 +7,25 @@ Game environments for reinforcement learning and open-ended learning composed of
 With conda :
 ```
 conda env create -f environment_cpu.yaml
+conda activate balzax_cpu
+pip install git+https://github.com/charlypg/Balzax
 ```
 
 ### GPU
-*Coming soon...*
+As before, it is recommended to use a *conda environment*.
+
+*Follow the instructions for the **GPU installation of [JAX](https://github.com/google/jax)**.*
+
+Then install *Balzax dependencies* : 
+- flax>=0.4.1
+- gym>=0.22.0
+- numpy
+- matplotlib
+
+Finally install *Balzax* :
+```
+pip install git+https://github.com/charlypg/Balzax
+```
 
 
 ## *Balzax* environments
