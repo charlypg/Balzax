@@ -22,6 +22,10 @@ class BallsBase:
     RAD_MAX = 0.065
     RAD_BASE = jnp.linspace(RAD_MIN, RAD_MAX, NUM_BALLS_MAX)
     VELOCITY_GAIN = 0.02
+    COLORS = jnp.array(
+        [[1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [1.0, 1.0, 0.0]],
+        dtype=jnp.float32,
+    )
 
     def __init__(self, obs_type: str = "position", num_balls: int = 4):
         assert num_balls in range(1, 1 + BallsBase.NUM_BALLS_MAX)
@@ -37,7 +41,7 @@ class BallsBase:
         assert BallsBase.RAD_MAX <= self.r_max
         self.init_radius = BallsBase.RAD_BASE[: self.num_balls]
 
-        self.colors = 1.0 * jnp.ones((self.num_balls,), dtype=jnp.float32)
+        self.colors = BallsBase.COLORS[: self.num_balls]
         self.image_dim = 224
 
         self.ball_colliders = get_ball_colliders(self.num_balls)
