@@ -23,8 +23,8 @@ class BallsBase:
     RAD_BASE = jnp.linspace(RAD_MIN, RAD_MAX, NUM_BALLS_MAX)
     VELOCITY_GAIN = 0.02
     COLORS = jnp.array(
-        [[1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [1.0, 1.0, 0.0]],
-        dtype=jnp.float32,
+        [[255, 0, 0], [0, 0, 255], [0, 255, 0], [255, 255, 0]],
+        dtype=jnp.int32,
     )
 
     def __init__(self, obs_type: str = "position", num_balls: int = 4):
