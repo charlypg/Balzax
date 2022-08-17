@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="balzax",
-    version="0.0.6",
+    version="0.0.7",
     author="Charly Pecqueux--Guezenec",
     description="""Game environments for reinforcement learning and open-ended learning
 composed of balls moving other balls and coded in JAX.""",
