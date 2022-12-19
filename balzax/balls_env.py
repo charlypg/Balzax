@@ -68,16 +68,17 @@ class BallsEnv(BalzaxEnv, BallsBase):
         reward = self.compute_reward(env_state.game_state, action, new_balls)
         new_timestep = env_state.timestep + 1
         truncated_b = BallsBase.truncated_base(self, new_balls)
-        truncation = new_timestep >= self.max_episode_steps
+        truncated = new_timestep >= self.max_episode_steps
         metrics = dict()
-        truncation = truncation | truncated_b
+        truncated = jnp.logical_or(truncated, truncated_b)
         terminated = jnp.array(reward, dtype=jnp.bool_) 
+        truncated = jnp.logical_and(truncated, jnp.logical_not(terminated))
         return EnvState(
             key=env_state.key,
             timestep=new_timestep,
             reward=reward,
             terminated=terminated,
-            truncation=truncation,
+            truncated=truncated,
             obs=new_obs,
             game_state=new_balls,
             metrics=metrics,
