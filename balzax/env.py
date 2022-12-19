@@ -13,7 +13,8 @@ class EnvState:
     timestep: jnp.ndarray
     obs: jnp.ndarray
     reward: jnp.ndarray
-    done: jnp.ndarray
+    terminated: jnp.ndarray
+    truncated: jnp.ndarray
     game_state: flax.struct.dataclass
     metrics: Dict[str, jnp.ndarray] = flax.struct.field(default_factory=dict)
     info: Dict[str, Any] = flax.struct.field(default_factory=dict)
@@ -78,7 +79,8 @@ class GoalEnvState:
     key: jnp.ndarray
     timestep: jnp.ndarray
     reward: jnp.ndarray
-    done: jnp.ndarray
+    terminated: jnp.ndarray
+    truncated: jnp.ndarray
     goalobs: Dict[str, jnp.ndarray]
     game_state: flax.struct.dataclass
     metrics: Dict[str, jnp.ndarray] = flax.struct.field(default_factory=dict)
