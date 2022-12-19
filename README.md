@@ -30,6 +30,10 @@ Finally, install *Balzax* :
 pip install git+https://github.com/charlypg/Balzax
 ```
 
+## Versions
+- **0.1.0 :** Balzax environments
+- **Over 0.1.1 :** Balzax environments with *terminated* and *truncated* instead of *done*, following the new OpenAI Gym interface (version 0.25.2)
+
 
 ## *Balzax* environments
 Originally, there are two JAX environments (state externally managed) : the *balls environments* ***BallsEnv*** and ***BallsEnvGoal*** (*goal-conditioned RL*), but ***Balzax*** also proposes ***Gym* wrappers** so as to apply most of *state-of-the-art* algorithms on it. In the implemented *Gym* wrappers, the environments vectorization is managed internally. *Balzax* also allows to implement custom environments thanks to the *abstract classes* ***BalzaxEnv*** and ***BalzaxGoalEnv***. 
