@@ -18,16 +18,14 @@ delta = time() - t0
 print("gym_env.reset : {}".format(delta))
 obs_list = [obs]
 reward_list = []
-done_list = []
 info_list = []
 
 t0 = time()
 for i in range(NB_ITER):
     angle = onp.sin(PULSE * i)
     action = onp.array([onp.cos(-angle), onp.sin(-angle)])
-    obs, reward, done, info = gym_env.step(action)
+    obs, reward, terminated, truncated, info = gym_env.step(action)
     reward_list.append(reward)
-    done_list.append(done)
     info_list.append(info)
     obs = gym_env.reset_done()
     obs_list.append(obs)

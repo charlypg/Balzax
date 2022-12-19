@@ -55,7 +55,7 @@ for i in tqdm(range(NB_ITER)):
     cos = onp.cos(angle)
     sin = onp.sin(angle)
     action = onp.concatenate((cos, sin), axis=1)
-    obs, reward, done, info = gym_env.step(action)
+    obs, reward, terminated, truncated, info = gym_env.step(action)
     info_list.append(info)
     rgb_image_list.append(custom_render(gym_env, obs.get("desired_goal"), COLOR))
     obs = gym_env.reset_done()
