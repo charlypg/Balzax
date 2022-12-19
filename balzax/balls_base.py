@@ -106,7 +106,7 @@ class BallsBase:
         )
         return new_balls, new_key
 
-    def done_base(self, balls: Ball) -> jnp.ndarray:
+    def truncated_base(self, balls: Ball) -> jnp.ndarray:
         """Returns whether the game state is terminal or not"""
         return jnp.array([out(balls)], dtype=jnp.bool_)
 
