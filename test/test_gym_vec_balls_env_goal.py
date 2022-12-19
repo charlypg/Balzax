@@ -43,7 +43,7 @@ for i in range(NB_ITER):
     cos = onp.cos(angle)
     sin = onp.sin(angle)
     action = onp.concatenate((cos, sin), axis=1)
-    obs, reward, done, info = gym_env.step(action)
+    obs, reward, terminated, truncated, info = gym_env.step(action)
     info_list.append(info)
     obs = gym_env.reset_done()
     obs_list.append(obs)

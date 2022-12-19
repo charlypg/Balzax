@@ -11,6 +11,10 @@ def reward_bottom_left_corner(balls: Ball):
     corner."""
     return -jnp.array([jnp.sum(balls.pos**2)])
 
+def sparse_reward_bottom_left_corner(balls: Ball):
+    """Sparse reward : 1 if bottom left corner reached, 0 else."""
+    return jnp.array(( jnp.array([jnp.sum(balls.pos**2)]) < 0.05 ), dtype=jnp.float32)
+
 
 class BallsEnv(BalzaxEnv, BallsBase):
     """Balls RL environment"""
@@ -30,22 +34,22 @@ class BallsEnv(BalzaxEnv, BallsBase):
 
     def compute_reward(self, balls: Ball, action: jnp.ndarray, new_balls: Ball):
         """Returns the reward associated to a transition"""
-        return reward_bottom_left_corner(new_balls)
+        return sparse_reward_bottom_left_corner(new_balls)
 
     def reset(self, key) -> EnvState:
         """Resets the environment step"""
         new_balls, new_key = BallsBase.reset_base(self, key)
 
-        truncation = jnp.array([False], dtype=jnp.bool_)
-        metrics = {"truncation": truncation}
-
-        done = truncation
+        terminated = jnp.array([False], dtype=jnp.bool_)
+        truncated = jnp.array([False], dtype=jnp.bool_)
+        metrics = dict()
 
         return EnvState(
             key=new_key,
             timestep=jnp.array([0], dtype=jnp.int32),
             reward=jnp.array([0.0]),
-            done=done,
+            terminated=terminated,
+            truncated=truncated,
             obs=self.get_obs(new_balls),
             game_state=new_balls,
             metrics=metrics,
@@ -53,7 +57,8 @@ class BallsEnv(BalzaxEnv, BallsBase):
 
     def reset_done(self, env_state: EnvState) -> EnvState:
         """Resets the environment when done."""
-        pred = env_state.done.squeeze(-1)
+        done = jnp.logical_or(env_state.terminated, env_state.truncated)
+        pred = done.squeeze(-1)
         return jax.lax.cond(pred, self.reset, lambda key: env_state, env_state.key)
 
     def step(self, env_state: EnvState, action: jnp.ndarray) -> EnvState:
@@ -61,16 +66,19 @@ class BallsEnv(BalzaxEnv, BallsBase):
         new_balls = BallsBase.step_base(self, env_state.game_state, action)
         new_obs = self.get_obs(new_balls)
         reward = self.compute_reward(env_state.game_state, action, new_balls)
+        terminated = jnp.array(reward, dtype=jnp.bool_) 
         new_timestep = env_state.timestep + 1
-        done_b = BallsBase.done_base(self, new_balls)
-        truncation = new_timestep >= self.max_episode_steps
-        metrics = {"truncation": truncation}
-        done = truncation | done_b
+        metrics = dict()
+        truncated_b = BallsBase.truncated_base(self, new_balls)
+        truncated = new_timestep >= self.max_episode_steps
+        truncated = jnp.logical_or(truncated, truncated_b)
+        truncated = jnp.logical_and(truncated, jnp.logical_not(terminated))
         return EnvState(
             key=env_state.key,
             timestep=new_timestep,
             reward=reward,
-            done=done,
+            terminated=terminated,
+            truncated=truncated,
             obs=new_obs,
             game_state=new_balls,
             metrics=metrics,

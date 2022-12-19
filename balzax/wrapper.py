@@ -63,7 +63,9 @@ class GymWrapper(gym.Env):
         self.env_state = self.reset_be(self.key)
         self.key = self.env_state.key
         if return_info:
-            return self.env_state.obs, self.env_state.metrics
+            info = self.env_state.metrics.copy()
+            info.update(self.env_state.info)
+            return self.env_state.obs, info
         else:
             return self.env_state.obs
 
@@ -71,7 +73,9 @@ class GymWrapper(gym.Env):
         """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
         if return_info:
-            return self.env_state.obs, self.env_state.metrics
+            info = self.env_state.metrics.copy()
+            info.update(self.env_state.info)
+            return self.env_state.obs, info
         else:
             return self.env_state.obs
 
@@ -81,7 +85,8 @@ class GymWrapper(gym.Env):
         return (
             self.env_state.obs,
             self.env_state.reward,
-            self.env_state.done,
+            self.env_state.terminated,
+            self.env_state.truncated,
             self.env_state.metrics,
         )
 
@@ -103,12 +108,13 @@ class GymWrapperSB3(GymWrapper):
 
     def step(self, action: onp.ndarray):
         """Performs an env step"""
-        obs, reward, done, info = super().step(jnp.array(action))
+        obs, reward, terminated, truncated, info = super().step(jnp.array(action))
         obs = onp.array(obs)
         reward = onp.array(reward.squeeze(-1))
-        done = onp.array(done.squeeze(-1))
+        terminated = onp.array(terminated.squeeze(-1))
+        truncated = onp.array(truncated.squeeze(-1))
         info = jnpdict_to_onpdict(info)
-        return obs, reward, done, info
+        return obs, reward, terminated, truncated, info
 
 
 class GymVecWrapper(gym.Env):
@@ -177,7 +183,9 @@ class GymVecWrapper(gym.Env):
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
         if return_info:
-            return self.env_state.obs, self.env_state.metrics
+            info = self.env_state.metrics.copy()
+            info.update(self.env_state.info)
+            return self.env_state.obs, info
         else:
             return self.env_state.obs
 
@@ -185,7 +193,9 @@ class GymVecWrapper(gym.Env):
         """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
         if return_info:
-            return self.env_state.obs, self.env_state.metrics
+            info = self.env_state.metrics.copy()
+            info.update(self.env_state.info)
+            return self.env_state.obs, info
         else:
             return self.env_state.obs
 
@@ -195,7 +205,8 @@ class GymVecWrapper(gym.Env):
         return (
             self.env_state.obs,
             self.env_state.reward,
-            self.env_state.done,
+            self.env_state.terminated,
+            self.env_state.truncated,
             self.env_state.metrics,
         )
 
@@ -328,7 +339,9 @@ class GoalGymVecWrapper(GoalEnv):
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
         if return_info:
-            return self.env_state.goalobs, self.env_state.metrics
+            info = self.env_state.metrics.copy()
+            info.update(self.env_state.info)
+            return self.env_state.obs, info
         else:
             return self.env_state.goalobs
 
@@ -336,7 +349,9 @@ class GoalGymVecWrapper(GoalEnv):
         """Resets env when done is true"""
         self.env_state = self.reset_done_be(self.env_state)
         if return_info:
-            return self.env_state.goalobs, self.env_state.metrics
+            info = self.env_state.metrics.copy()
+            info.update(self.env_state.info)
+            return self.env_state.obs, info
         else:
             return self.env_state.goalobs
 
@@ -346,6 +361,7 @@ class GoalGymVecWrapper(GoalEnv):
         return (
             self.env_state.goalobs,
             self.env_state.reward,
-            self.env_state.done,
+            self.env_state.terminated,
+            self.env_state.truncated,
             self.env_state.metrics,
         )
