@@ -334,8 +334,15 @@ class GoalGymVecWrapper(GoalEnv):
         """Set the goal"""
         self.env_state = self.set_desired_goal_be(self.env_state, jnp.array(goal))
 
-    def reset(self, return_info: bool = False):
+    def reset(
+        self, 
+        return_info: bool = False,
+        seed: Optional[int] = None,
+        options: Optional[dict] = None,
+    ):
         """Resets env state"""
+        if seed is not None:
+            self.seed(seed=seed)
         self.env_state = self.reset_be(self.keys)
         self.keys = self.env_state.key
         if return_info:
@@ -345,8 +352,15 @@ class GoalGymVecWrapper(GoalEnv):
         else:
             return self.env_state.goalobs
 
-    def reset_done(self, return_info: bool = False):
+    def reset_done(
+        self, 
+        return_info: bool = False,
+        seed: Optional[int] = None,
+        options: Optional[dict] = None,
+    ):
         """Resets env when done is true"""
+        if seed is not None:
+            self.seed(seed=seed)
         self.env_state = self.reset_done_be(self.env_state)
         if return_info:
             info = self.env_state.metrics.copy()
