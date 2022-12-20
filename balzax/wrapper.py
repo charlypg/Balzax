@@ -15,7 +15,7 @@ def jnpdict_to_onpdict(jnp_dict: Dict[str, jnp.ndarray]):
         onp_dict[key] = onp.array(value)
     return onp_dict
 
-
+# TODO: adapt reset(_done) to new Gym interface
 class GymWrapper(gym.Env):
     """A wrapper that converts Balzax Env to one that follows Gym API."""
 
@@ -90,7 +90,7 @@ class GymWrapper(gym.Env):
             self.env_state.metrics,
         )
 
-
+# TODO: adapt reset(_done) to new Gym interface
 class GymWrapperSB3(GymWrapper):
     """Gym wrapper which can be used with stable-baselines3"""
 
@@ -116,7 +116,7 @@ class GymWrapperSB3(GymWrapper):
         info = jnpdict_to_onpdict(info)
         return obs, reward, terminated, truncated, info
 
-
+# TODO: adapt reset(_done) to new Gym interface
 class GymVecWrapper(gym.Env):
     """Vectorized version of GymWrapper.
     This wrapper that converts a vectorized Balzax Env to a Gym Env."""
