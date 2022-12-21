@@ -1,3 +1,5 @@
+import jax
+import jax.numpy as jnp
 import numpy as onp
 import matplotlib.pyplot as plt
 from time import time
@@ -5,6 +7,9 @@ from time import time
 from balzax.balls_env_goal import BallsEnvGoal
 from balzax.wrapper import GoalGymVecWrapper
 
+@jax.jit
+def compute_done(terminated: jnp.ndarray, truncated: jnp.ndarray) -> jnp.ndarray:
+    return jnp.logical_or(terminated, truncated)
 
 def plot_vect_goalobs(i: int, vect_goalobs: dict, num_goalobs: int):
     fig = plt.figure(i, constrained_layout=True)
@@ -31,7 +36,7 @@ env = BallsEnvGoal(obs_type=OBS_TYPE, max_episode_steps=MAX_EPISODE_STEPS)
 gym_env = GoalGymVecWrapper(env=env, num_envs=NUM_ENVS, seed=SEED)
 
 t0 = time()
-obs = gym_env.reset()
+obs = gym_env.reset(return_info=False)
 delta = time() - t0
 print("gym_env.reset : {}".format(delta))
 obs_list = [obs]
@@ -45,7 +50,8 @@ for i in range(NB_ITER):
     action = onp.concatenate((cos, sin), axis=1)
     obs, reward, terminated, truncated, info = gym_env.step(action)
     info_list.append(info)
-    obs = gym_env.reset_done()
+    done = compute_done(terminated, truncated)
+    obs = gym_env.reset_done(done, return_info=False)
     obs_list.append(obs)
 delta = time() - t0
 print("Rollout of {0} : {1}".format(NB_ITER, delta))

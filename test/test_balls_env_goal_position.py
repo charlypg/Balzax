@@ -11,6 +11,9 @@ def vel(pulse, i):
     angle = jnp.sin(pulse * i)
     return jnp.array([jnp.cos(angle), jnp.sin(angle)])
 
+@jax.jit
+def compute_done(terminated: jnp.ndarray, truncated: jnp.ndarray) -> jnp.ndarray:
+    return jnp.logical_or(terminated, truncated)
 
 print("TEST : BallsEnvGoal(obs_type='position')")
 print()
@@ -35,7 +38,8 @@ print(env_state)
 print()
 
 t0 = time()
-env_state = jit_env_reset_done(env_state)
+done = compute_done(env_state.terminated, env_state.truncated)
+env_state = jit_env_reset_done(env_state, done)
 print("Time to reset_done (jit+exec) : {}s".format(time() - t0))
 print("State of the environment : Timestep 0")
 print(env_state)
@@ -56,7 +60,8 @@ image_list.append(env.get_image(env_state.game_state))
 t0 = time()
 for i in range(nb_iter_1):
     env_state = jit_env_step(env_state, vel(pulse, i))
-    env_state = jit_env_reset_done(env_state)
+    done = compute_done(env_state.terminated, env_state.truncated)
+    env_state = jit_env_reset_done(env_state, done)
     # image_list.append(env.get_image(env_state.game_state))
 print(
     "Rollout of {0} iterations (compiled step and reset_done) : {1}".format(
@@ -67,7 +72,8 @@ print(
 t0 = time()
 for i in range(nb_iter_2):
     env_state = jit_env_step(env_state, vel(pulse, i))
-    env_state = jit_env_reset_done(env_state)
+    done = compute_done(env_state.terminated, env_state.truncated)
+    env_state = jit_env_reset_done(env_state, done)
     # image_list.append(env.get_image(env_state.game_state))
 print(
     "Rollout of {0} iterations (compiled step and reset_done) : {1}".format(

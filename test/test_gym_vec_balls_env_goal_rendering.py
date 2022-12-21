@@ -1,3 +1,4 @@
+import jax
 import jax.numpy as jnp
 import numpy as onp
 import matplotlib.pyplot as plt
@@ -9,6 +10,9 @@ from balzax.wrapper import GoalGymVecWrapper
 from balzax.structures import Ball
 from balzax.image_generation import balls_to_one_image
 
+@jax.jit
+def compute_done(terminated: jnp.ndarray, truncated: jnp.ndarray) -> jnp.ndarray:
+    return jnp.logical_or(terminated, truncated)
 
 def goal_to_ball(gym_env: GoalGymVecWrapper, goal):
     balls = gym_env.env_state.game_state
@@ -41,7 +45,7 @@ env = BallsEnvGoal(
 gym_env = GoalGymVecWrapper(env=env, num_envs=NUM_ENVS, seed=SEED)
 
 t0 = time()
-obs = gym_env.reset()
+obs = gym_env.reset(return_info=False)
 delta = time() - t0
 print("gym_env.reset : {}".format(delta))
 obs_list = [obs]
@@ -58,7 +62,8 @@ for i in tqdm(range(NB_ITER)):
     obs, reward, terminated, truncated, info = gym_env.step(action)
     info_list.append(info)
     rgb_image_list.append(custom_render(gym_env, obs.get("desired_goal"), COLOR))
-    obs = gym_env.reset_done()
+    done = compute_done(terminated, truncated)
+    obs = gym_env.reset_done(done, return_info=False)
     obs_list.append(obs)
 delta = time() - t0
 print("Rollout of {0} : {1}".format(NB_ITER, delta))

@@ -10,9 +10,11 @@ def vel(pulse, i):
     angle = jnp.sin(pulse * i)
     return jnp.array([jnp.cos(angle), jnp.sin(angle)])
 
-
 vmap_vel = jax.jit(jax.vmap(vel))
 
+@jax.jit
+def compute_done(terminated: jnp.ndarray, truncated: jnp.ndarray) -> jnp.ndarray:
+    return jnp.logical_or(terminated, truncated)
 
 def plot_vect_goalobs(i: int, vect_goalobs: dict, num_goalobs: int):
     fig = plt.figure(i, constrained_layout=True)
@@ -92,7 +94,8 @@ t0 = time()
 for _ in range(NB_ITER_1):
     env_states = vmap_env_step(env_states, ACTION_1)
     metrics_list.append(env_states.metrics)
-    env_states = vmap_env_reset_done(env_states)
+    done = compute_done(env_states.terminated, env_states.truncated)
+    env_states = vmap_env_reset_done(env_states, done)
     goalobs_list.append(env_states.goalobs)
 print("{0} iterations in {1}s".format(NB_ITER_1, time() - t0))
 print()
@@ -102,7 +105,8 @@ t0 = time()
 for i in range(NB_ITER_1, NB_ITER_1 + NB_ITER_2):
     env_states = vmap_env_step(env_states, vmap_vel(pulse, i * jnp.ones((NUM_ENV,))))
     metrics_list.append(env_states.metrics)
-    env_states = vmap_env_reset_done(env_states)
+    done = compute_done(env_states.terminated, env_states.truncated)
+    env_states = vmap_env_reset_done(env_states, done)
     goalobs_list.append(env_states.goalobs)
 print("{0} iterations in {1}s".format(NB_ITER_2, time() - t0))
 print()
