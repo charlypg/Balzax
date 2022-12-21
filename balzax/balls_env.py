@@ -15,7 +15,7 @@ def sparse_reward_bottom_left_corner(balls: Ball):
     """Sparse reward : 1 if bottom left corner reached, 0 else."""
     return jnp.array(( jnp.array([jnp.sum(balls.pos**2)]) < 0.05 ), dtype=jnp.float32)
 
-
+# TODO: adapt to new Gym interface / done in reset_done args ?
 class BallsEnv(BalzaxEnv, BallsBase):
     """Balls RL environment"""
 

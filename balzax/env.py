@@ -19,7 +19,7 @@ class EnvState:
     metrics: Dict[str, jnp.ndarray] = flax.struct.field(default_factory=dict)
     info: Dict[str, Any] = flax.struct.field(default_factory=dict)
 
-
+# TODO: adapt to new Gym interface / done in reset_done args ?
 class BalzaxEnv(abc.ABC):
     """Defines a Balzax environment without goal"""
 
