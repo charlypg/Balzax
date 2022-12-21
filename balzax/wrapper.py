@@ -373,10 +373,12 @@ class GoalGymVecWrapper(GoalEnv):
     def step(self, action: jnp.ndarray):
         """Performs an env step"""
         self.env_state = self.step_be(self.env_state, action)
+        info = self.env_state.metrics.copy()
+        info.update(self.env_state.info)
         return (
             self.env_state.goalobs,
             self.env_state.reward,
             self.env_state.terminated,
             self.env_state.truncated,
-            self.env_state.metrics,
+            info,
         )
