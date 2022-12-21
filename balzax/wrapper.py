@@ -362,7 +362,7 @@ class GoalGymVecWrapper(GoalEnv):
         """Resets env when done is true"""
         if seed is not None:
             self.seed(seed=seed)
-        self.env_state = self.reset_done_be(self.env_state)
+        self.env_state = self.reset_done_be(self.env_state, done)
         if return_info:
             info = self.env_state.metrics.copy()
             info.update(self.env_state.info)
