@@ -336,7 +336,7 @@ class GoalGymVecWrapper(GoalEnv):
 
     def reset(
         self, 
-        return_info: bool = False,
+        return_info: bool = True,
         seed: Optional[int] = None,
         options: Optional[dict] = None,
     ):
@@ -348,13 +348,14 @@ class GoalGymVecWrapper(GoalEnv):
         if return_info:
             info = self.env_state.metrics.copy()
             info.update(self.env_state.info)
-            return self.env_state.obs, info
+            return self.env_state.goalobs, info
         else:
             return self.env_state.goalobs
 
     def reset_done(
         self, 
-        return_info: bool = False,
+        done: bool,
+        return_info: bool = True,
         seed: Optional[int] = None,
         options: Optional[dict] = None,
     ):
@@ -365,7 +366,7 @@ class GoalGymVecWrapper(GoalEnv):
         if return_info:
             info = self.env_state.metrics.copy()
             info.update(self.env_state.info)
-            return self.env_state.obs, info
+            return self.env_state.goalobs, info
         else:
             return self.env_state.goalobs
 
