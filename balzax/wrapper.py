@@ -326,7 +326,7 @@ class GoalGymVecWrapper(GoalEnv):
         """Rendering of the game state : image by default"""
         return self.render_be(self.env_state)
 
-    def compute_reward(self, achieved_goal, desired_goal, info=dict()):
+    def compute_reward(self, achieved_goal, desired_goal, action=None, next_observation=None, info=dict()):
         """Computes goal env reward"""
         return self.compute_reward_be(jnp.array(achieved_goal), jnp.array(desired_goal))
 
