@@ -1,3 +1,5 @@
+__version__ = "0.1.2"
+
 from balzax import balls_base
 from balzax import balls_env_goal
 from balzax import balls_env
