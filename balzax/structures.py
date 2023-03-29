@@ -2,6 +2,7 @@ import jax
 import jax.numpy as jnp
 import flax
 from functools import partial
+from typing import Tuple
 
 
 @flax.struct.dataclass
@@ -103,7 +104,7 @@ def update_bw(balls: Ball, pen_res_fcts) -> Ball:
 
 def pen_vect_bb(
     pos_1: jnp.ndarray, radius_1: jnp.ndarray, pos_2: jnp.ndarray, radius_2: jnp.ndarray
-) -> (jnp.ndarray, jnp.ndarray):
+) -> Tuple[jnp.ndarray, jnp.ndarray]:
     """Returns the penetration vector between two balls"""
     diff = pos_1 - pos_2
     distance = jnp.linalg.norm(diff)
@@ -113,7 +114,7 @@ def pen_vect_bb(
 
 def pen_res_bb_pos(
     pos_1: jnp.ndarray, radius_1: jnp.ndarray, pos_2: jnp.ndarray, radius_2: jnp.ndarray
-) -> (jnp.ndarray, jnp.ndarray):
+) -> Tuple[jnp.ndarray, jnp.ndarray]:
     """Solves the penetration problem"""
     pen_vect = pen_vect_bb(pos_1, radius_1, pos_2, radius_2)
     pen_vect_2 = pen_vect / 2.0
