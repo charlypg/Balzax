@@ -11,9 +11,11 @@ def reward_bottom_left_corner(balls: Ball):
     corner."""
     return -jnp.array([jnp.sum(balls.pos**2)])
 
+
 def sparse_reward_bottom_left_corner(balls: Ball):
     """Sparse reward : 1 if bottom left corner reached, 0 else."""
-    return jnp.array(( jnp.array([jnp.sum(balls.pos**2)]) < 0.05 ), dtype=jnp.float32)
+    return jnp.array((jnp.array([jnp.sum(balls.pos**2)]) < 0.05), dtype=jnp.float32)
+
 
 # TODO: adapt to new Gym interface / done in reset_done args ?
 class BallsEnv(BalzaxEnv, BallsBase):
@@ -66,7 +68,7 @@ class BallsEnv(BalzaxEnv, BallsBase):
         new_balls = BallsBase.step_base(self, env_state.game_state, action)
         new_obs = self.get_obs(new_balls)
         reward = self.compute_reward(env_state.game_state, action, new_balls)
-        terminated = jnp.array(reward, dtype=jnp.bool_) 
+        terminated = jnp.array(reward, dtype=jnp.bool_)
         new_timestep = env_state.timestep + 1
         metrics = dict()
         truncated_b = BallsBase.truncated_base(self, new_balls)

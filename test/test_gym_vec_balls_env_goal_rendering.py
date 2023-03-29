@@ -10,9 +10,11 @@ from balzax.wrapper import GoalGymVecWrapper
 from balzax.structures import Ball
 from balzax.image_generation import balls_to_one_image
 
+
 @jax.jit
 def compute_done(terminated: jnp.ndarray, truncated: jnp.ndarray) -> jnp.ndarray:
     return jnp.logical_or(terminated, truncated)
+
 
 def goal_to_ball(gym_env: GoalGymVecWrapper, goal):
     balls = gym_env.env_state.game_state

@@ -140,7 +140,9 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
             metrics=metrics,
         )
 
-    def reset_done(self, goal_env_state: GoalEnvState, done: jnp.ndarray) -> GoalEnvState:
+    def reset_done(
+        self, goal_env_state: GoalEnvState, done: jnp.ndarray
+    ) -> GoalEnvState:
         """Resets the environment when done."""
         pred = done.squeeze(-1)
         return jax.lax.cond(

@@ -10,11 +10,14 @@ def vel(pulse, i):
     angle = jnp.sin(pulse * i)
     return jnp.array([jnp.cos(angle), jnp.sin(angle)])
 
+
 vmap_vel = jax.jit(jax.vmap(vel))
+
 
 @jax.jit
 def compute_done(terminated: jnp.ndarray, truncated: jnp.ndarray) -> jnp.ndarray:
     return jnp.logical_or(terminated, truncated)
+
 
 def plot_vect_goalobs(i: int, vect_goalobs: dict, num_goalobs: int):
     fig = plt.figure(i, constrained_layout=True)

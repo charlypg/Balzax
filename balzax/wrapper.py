@@ -15,6 +15,7 @@ def jnpdict_to_onpdict(jnp_dict: Dict[str, jnp.ndarray]):
         onp_dict[key] = onp.array(value)
     return onp_dict
 
+
 # TODO: adapt reset(_done) to new Gym interface
 class GymWrapper(gym.Env):
     """A wrapper that converts Balzax Env to one that follows Gym API."""
@@ -90,6 +91,7 @@ class GymWrapper(gym.Env):
             self.env_state.metrics,
         )
 
+
 # TODO: adapt reset(_done) to new Gym interface
 class GymWrapperSB3(GymWrapper):
     """Gym wrapper which can be used with stable-baselines3"""
@@ -115,6 +117,7 @@ class GymWrapperSB3(GymWrapper):
         truncated = onp.array(truncated.squeeze(-1))
         info = jnpdict_to_onpdict(info)
         return obs, reward, terminated, truncated, info
+
 
 # TODO: adapt reset(_done) to new Gym interface
 class GymVecWrapper(gym.Env):
@@ -326,7 +329,14 @@ class GoalGymVecWrapper(GoalEnv):
         """Rendering of the game state : image by default"""
         return self.render_be(self.env_state)
 
-    def compute_reward(self, achieved_goal, desired_goal, action=None, next_observation=None, info=dict()):
+    def compute_reward(
+        self,
+        achieved_goal,
+        desired_goal,
+        action=None,
+        next_observation=None,
+        info=dict(),
+    ):
         """Computes goal env reward"""
         return self.compute_reward_be(jnp.array(achieved_goal), jnp.array(desired_goal))
 
@@ -335,7 +345,7 @@ class GoalGymVecWrapper(GoalEnv):
         self.env_state = self.set_desired_goal_be(self.env_state, jnp.array(goal))
 
     def reset(
-        self, 
+        self,
         return_info: bool = True,
         seed: Optional[int] = None,
         options: Optional[dict] = None,
@@ -353,7 +363,7 @@ class GoalGymVecWrapper(GoalEnv):
             return self.env_state.goalobs
 
     def reset_done(
-        self, 
+        self,
         done: bool,
         return_info: bool = True,
         seed: Optional[int] = None,
