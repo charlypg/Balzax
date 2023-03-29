@@ -1,7 +1,7 @@
-__version__ = "0.1.2"
-
-
+from balzax import balls
 import gym
+
+__version__ = "0.1.2"
 
 gym.register(
     id="GymSingleBallsEnv-position-v0",
