@@ -2,12 +2,12 @@ import jax
 import jax.numpy as jnp
 from functools import partial
 
-from balzax.structures import Ball
-from balzax.structures import create_wall, get_ball_colliders, pen_res_functions_w
-from balzax.structures import update_agent_pos, update_bb, update_bw
-from balzax.structures import out
-from balzax.random_reset_base import compute_r, random_reset
-from balzax.image_generation import balls_to_one_image
+from balzax.balls.structures import Ball
+from balzax.balls.structures import create_wall, get_ball_colliders, pen_res_functions_w
+from balzax.balls.structures import update_agent_pos, update_bb, update_bw
+from balzax.balls.structures import out
+from balzax.balls.random_reset_base import compute_r, random_reset
+from balzax.balls.image_generation import balls_to_one_image
 
 
 def clip_unit_circle(u: jnp.ndarray) -> jnp.ndarray:

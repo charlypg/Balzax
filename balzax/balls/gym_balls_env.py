@@ -1,7 +1,8 @@
 import gym
 from typing import Optional
-from balzax.balls_env import BallsEnv
+
 from balzax.wrapper import GymWrapper, GymVecWrapper
+from balzax.balls.balls_env import BallsEnv
 
 
 def gym_single_balls_env_factory(

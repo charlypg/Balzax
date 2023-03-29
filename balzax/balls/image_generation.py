@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from functools import partial
 
-from balzax.structures import Ball
+from balzax.balls.structures import Ball
 
 
 def scale_ball(ball: Ball, scale) -> Ball:

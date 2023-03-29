@@ -1,9 +1,9 @@
 import jax
 import jax.numpy as jnp
 
-from balzax.structures import Ball
-from balzax.balls_base import BallsBase
 from balzax.env import BalzaxEnv, EnvState
+from balzax.balls.structures import Ball
+from balzax.balls.balls_base import BallsBase
 
 
 def reward_bottom_left_corner(balls: Ball):

@@ -1,8 +1,9 @@
 import gym
 from typing import Optional, Tuple, Callable
 import jax.numpy as jnp
-from balzax.balls_env_goal import BallsEnvGoal
+
 from balzax.wrapper import GoalGymVecWrapper
+from balzax.balls.balls_env_goal import BallsEnvGoal
 
 
 def gym_balls_env_goal_factory(

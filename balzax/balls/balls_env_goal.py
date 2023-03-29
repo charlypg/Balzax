@@ -2,8 +2,8 @@ import jax
 import jax.numpy as jnp
 from typing import Callable
 
-from balzax.balls_base import BallsBase
 from balzax.env import GoalEnvState, BalzaxGoalEnv
+from balzax.balls.balls_base import BallsBase
 
 
 def compute_goal_l2_dist_2(goal_a: jnp.ndarray, goal_b: jnp.ndarray) -> jnp.ndarray:

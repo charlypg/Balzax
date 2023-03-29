@@ -2,7 +2,8 @@ import jax
 import jax.numpy as jnp
 from jax.scipy.optimize import minimize
 from functools import partial
-from balzax.structures import Ball
+
+from balzax.balls.structures import Ball
 
 
 def elem_dist_cost(ball_1: Ball, ball_2: Ball):

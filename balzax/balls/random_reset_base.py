@@ -3,8 +3,8 @@ import jax
 import jax.numpy as jnp
 from functools import partial
 
-from balzax.structures import Ball
-from balzax.structures import sample_ball_uniform_pos
+from balzax.balls.structures import Ball
+from balzax.balls.structures import sample_ball_uniform_pos
 
 
 def f(p_M, n):
