@@ -1,9 +1,11 @@
 import numpy as onp
-import matplotlib.pyplot as plt
 from time import time
 
-from balzax.balls_env import BallsEnv
+from balzax.balls.balls_env import BallsEnv
 from balzax.wrapper import GymVecWrapper
+
+# TODO: Animation
+# TODO: Test actually used gym environments
 
 OBS_TYPE = "image"
 NUM_ENVS = 3
@@ -33,6 +35,7 @@ for i in range(NB_ITER):
 delta = time() - t0
 print("Rollout of {0} : {1}".format(NB_ITER, delta))
 
+"""
 for i, obs in enumerate(obs_list):
     plt.figure(i)
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
@@ -42,4 +45,4 @@ for i, obs in enumerate(obs_list):
     ax2.set_title("Env 1")
     ax2.imshow(obs[1], origin="lower")
     ax3.set_title("Env 2")
-    ax3.imshow(obs[2], origin="lower")
+    ax3.imshow(obs[2], origin="lower")"""

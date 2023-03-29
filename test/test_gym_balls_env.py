@@ -1,15 +1,16 @@
 import numpy as onp
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 from time import time
 
-from balzax.balls_env import BallsEnv
+from balzax.balls.balls_env import BallsEnv
 from balzax.wrapper import GymWrapper
 
 
 env = BallsEnv(obs_type="image", max_episode_steps=500)
 gym_env = GymWrapper(env=env, seed=0)
 
-NB_ITER = 200
+NB_ITER = 53
 PULSE = onp.array(2 * onp.pi / NB_ITER)
 
 t0 = time()
@@ -32,7 +33,19 @@ for i in range(NB_ITER):
 delta = time() - t0
 print("Rollout of {0} : {1}".format(NB_ITER, delta))
 
-for i, image in enumerate(obs_list):
-    plt.figure(i)
-    plt.title("Timestep {}".format(i))
-    plt.imshow(image, origin="lower")
+FRAMES = NB_ITER
+fig, axs = plt.subplots()
+
+
+def animate_vect_goalobs(i):
+    fig.suptitle("Timestep {}".format(i))
+    axs.imshow(obs_list[i].squeeze(), origin="lower")
+
+
+ani_goal = animation.FuncAnimation(fig, animate_vect_goalobs, frames=FRAMES)
+FFwriter = animation.FFMpegWriter()
+ani_goal.save(
+    "animation_rollout.mp4",
+    writer=FFwriter,
+    progress_callback=lambda i, n: print(i),
+)

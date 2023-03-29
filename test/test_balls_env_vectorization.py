@@ -1,11 +1,10 @@
 import jax
 import jax.numpy as jnp
-
+import matplotlib.animation as animation
 import matplotlib.pyplot as plt
-
 from time import time
 
-from balzax.balls_env import BallsEnv
+from balzax.balls.balls_env import BallsEnv
 
 
 def vel(pulse, i):
@@ -20,7 +19,7 @@ MAX_EPSISODE_STEPS = 3
 SEED = 0
 NUM_ENV = 3
 
-NB_ITER = 21
+NB_ITER = 57
 
 ACTION_0 = jnp.zeros((NUM_ENV, 2))
 ACTION_1 = jnp.ones((NUM_ENV, 2))
@@ -98,13 +97,20 @@ for i in range(NB_ITER):
 print("{0} iterations in {1}s".format(NB_ITER, time() - t0))
 print()
 
-for i, obs in enumerate(obs_list):
-    plt.figure(i)
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+FRAMES = NB_ITER
+fig, axs = plt.subplots(1, NUM_ENV)
+
+
+def animate_vect_goalobs(i):
     fig.suptitle("Timestep {}".format(i))
-    ax1.set_title("Env 0")
-    ax1.imshow(obs[0], origin="lower")
-    ax2.set_title("Env 1")
-    ax2.imshow(obs[1], origin="lower")
-    ax3.set_title("Env 2")
-    ax3.imshow(obs[2], origin="lower")
+    for j in range(NUM_ENV):
+        axs[j].imshow(obs_list[i][j].squeeze(), origin="lower")
+
+
+ani_goal = animation.FuncAnimation(fig, animate_vect_goalobs, frames=FRAMES)
+FFwriter = animation.FFMpegWriter()
+ani_goal.save(
+    "animation_rollout.mp4",
+    writer=FFwriter,
+    progress_callback=lambda i, n: print(i),
+)

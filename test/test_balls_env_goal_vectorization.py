@@ -1,9 +1,10 @@
 import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 from time import time
 
-from balzax.balls_env_goal import BallsEnvGoal
+from balzax.balls.balls_env_goal import BallsEnvGoal
 
 
 def vel(pulse, i):
@@ -114,6 +115,25 @@ for i in range(NB_ITER_1, NB_ITER_1 + NB_ITER_2):
 print("{0} iterations in {1}s".format(NB_ITER_2, time() - t0))
 print()
 
-num_goalobs = min(2, NB_ITER_2)
-for i, vect_goalobs in enumerate(goalobs_list):
-    plot_vect_goalobs(i, vect_goalobs, num_goalobs)
+
+FRAMES = NB_ITER_1 + NB_ITER_2
+fig, axs = plt.subplots(NUM_ENV, 3)
+
+
+def animate_vect_goalobs(i):
+    fig.suptitle("Timestep {}".format(i))
+    for j in range(NUM_ENV):
+        for k, (field, value) in enumerate(
+            zip(goalobs_list[i].keys(), goalobs_list[i].values())
+        ):
+            axs[j, k].imshow(value[j].squeeze(), origin="lower")
+            axs[j, k].set_title(field)
+
+
+ani_goal = animation.FuncAnimation(fig, animate_vect_goalobs, frames=FRAMES)
+FFwriter = animation.FFMpegWriter()
+ani_goal.save(
+    "animation_rollout_goal_oriented.mp4",
+    writer=FFwriter,
+    progress_callback=lambda i, n: print(i),
+)

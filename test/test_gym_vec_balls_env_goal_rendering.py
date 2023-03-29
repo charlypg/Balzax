@@ -1,14 +1,17 @@
 import jax
 import jax.numpy as jnp
 import numpy as onp
-import matplotlib.pyplot as plt
 from time import time
 from tqdm import tqdm
 
-from balzax.balls_env_goal import BallsEnvGoal
+from balzax.balls.balls_env_goal import BallsEnvGoal
 from balzax.wrapper import GoalGymVecWrapper
-from balzax.structures import Ball
-from balzax.image_generation import balls_to_one_image
+from balzax.balls.structures import Ball
+from balzax.balls.image_generation import balls_to_one_image
+
+
+# TODO: Animation
+# TODO: Test actually used gym environments
 
 
 @jax.jit
@@ -70,7 +73,8 @@ for i in tqdm(range(NB_ITER)):
 delta = time() - t0
 print("Rollout of {0} : {1}".format(NB_ITER, delta))
 
+"""
 for i, rgb_image in enumerate(rgb_image_list):
     plt.figure(i)
     plt.title("Timestep {}".format(i))
-    plt.imshow(rgb_image, origin="lower")
+    plt.imshow(rgb_image, origin="lower")"""

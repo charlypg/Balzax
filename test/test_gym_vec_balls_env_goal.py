@@ -4,8 +4,11 @@ import numpy as onp
 import matplotlib.pyplot as plt
 from time import time
 
-from balzax.balls_env_goal import BallsEnvGoal
+from balzax.balls.balls_env_goal import BallsEnvGoal
 from balzax.wrapper import GoalGymVecWrapper
+
+# TODO: Animation
+# TODO: Test actually used gym environments
 
 
 @jax.jit
@@ -58,6 +61,7 @@ for i in range(NB_ITER):
 delta = time() - t0
 print("Rollout of {0} : {1}".format(NB_ITER, delta))
 
+"""
 num_goalobs = min(2, NUM_ENVS)
 for i, vect_goalobs in enumerate(obs_list):
-    plot_vect_goalobs(i, vect_goalobs, num_goalobs)
+    plot_vect_goalobs(i, vect_goalobs, num_goalobs)"""

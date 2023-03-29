@@ -3,7 +3,7 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 from time import time
 
-from balzax.balls_env_goal import BallsEnvGoal
+from balzax.balls.balls_env_goal import BallsEnvGoal
 
 
 @jax.jit
@@ -26,9 +26,9 @@ jit_env_reset = jax.jit(env.reset)  # env.reset
 jit_env_step = jax.jit(env.step)  # env.step
 
 key = jax.random.PRNGKey(0)
-nb_iter_1 = 1
-nb_iter_2 = 10_000
-assert nb_iter_1 < nb_iter_2
+NB_ITER_1 = 1
+NB_ITER_2 = 10_000
+assert NB_ITER_1 < NB_ITER_2
 pulse = jnp.array(2 * jnp.pi / 200)
 image_list = []
 
@@ -60,26 +60,26 @@ print()
 image_list.append(env.get_image(env_state.game_state))
 
 t0 = time()
-for i in range(nb_iter_1):
+for i in range(NB_ITER_1):
     env_state = jit_env_step(env_state, vel(pulse, i))
     done = compute_done(env_state.terminated, env_state.truncated)
     env_state = jit_env_reset_done(env_state, done)
     # image_list.append(env.get_image(env_state.game_state))
 print(
     "Rollout of {0} iterations (compiled step and reset_done) : {1}".format(
-        nb_iter_1, time() - t0
+        NB_ITER_1, time() - t0
     )
 )
 
 t0 = time()
-for i in range(nb_iter_2):
+for i in range(NB_ITER_2):
     env_state = jit_env_step(env_state, vel(pulse, i))
     done = compute_done(env_state.terminated, env_state.truncated)
     env_state = jit_env_reset_done(env_state, done)
     # image_list.append(env.get_image(env_state.game_state))
 print(
     "Rollout of {0} iterations (compiled step and reset_done) : {1}".format(
-        nb_iter_2, time() - t0
+        NB_ITER_2, time() - t0
     )
 )
 print()
