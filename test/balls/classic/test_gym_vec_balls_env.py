@@ -1,10 +1,11 @@
 import numpy as onp
 from time import time
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 from balzax.balls.balls_env import BallsEnv
 from balzax.wrapper import GymVecWrapper
 
-# TODO: Animation
 # TODO: Test actually used gym environments
 
 OBS_TYPE = "image"
@@ -30,19 +31,26 @@ for i in range(NB_ITER):
     sin = onp.sin(angle)
     action = onp.concatenate((cos, sin), axis=1)
     obs, reward, terminated, truncated, info = gym_env.step(action)
-    obs = gym_env.reset_done()
+    done = onp.logical_or(terminated, truncated)
+    obs = gym_env.reset_done(done=done, return_info=False)
     obs_list.append(obs)
 delta = time() - t0
 print("Rollout of {0} : {1}".format(NB_ITER, delta))
 
-"""
-for i, obs in enumerate(obs_list):
-    plt.figure(i)
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+FRAMES = NB_ITER
+fig, axs = plt.subplots(1, NUM_ENVS)
+
+
+def animate_vect_goalobs(i):
     fig.suptitle("Timestep {}".format(i))
-    ax1.set_title("Env 0")
-    ax1.imshow(obs[0], origin="lower")
-    ax2.set_title("Env 1")
-    ax2.imshow(obs[1], origin="lower")
-    ax3.set_title("Env 2")
-    ax3.imshow(obs[2], origin="lower")"""
+    for j in range(NUM_ENVS):
+        axs[j].imshow(obs_list[i][j].squeeze(), origin="lower")
+
+
+ani_goal = animation.FuncAnimation(fig, animate_vect_goalobs, frames=FRAMES)
+FFwriter = animation.FFMpegWriter()
+ani_goal.save(
+    "test_gym_vec_balls_env.mp4",
+    writer=FFwriter,
+    progress_callback=lambda i, n: print(i),
+)

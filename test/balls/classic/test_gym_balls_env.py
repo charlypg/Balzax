@@ -28,7 +28,8 @@ for i in range(NB_ITER):
     obs, reward, terminated, truncated, info = gym_env.step(action)
     reward_list.append(reward)
     info_list.append(info)
-    obs = gym_env.reset_done()
+    done = onp.logical_or(terminated, truncated)
+    obs = gym_env.reset_done(done=done, return_info=False)
     obs_list.append(obs)
 delta = time() - t0
 print("Rollout of {0} : {1}".format(NB_ITER, delta))
@@ -45,7 +46,7 @@ def animate_vect_goalobs(i):
 ani_goal = animation.FuncAnimation(fig, animate_vect_goalobs, frames=FRAMES)
 FFwriter = animation.FFMpegWriter()
 ani_goal.save(
-    "animation_rollout.mp4",
+    "test_gym_balls_env.mp4",
     writer=FFwriter,
     progress_callback=lambda i, n: print(i),
 )

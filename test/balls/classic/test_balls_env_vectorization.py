@@ -49,7 +49,7 @@ print("Time of reset (jit+exec) : {}".format(time() - t0))
 print()
 
 t0 = time()
-env_states = vmap_env_reset_done(env_states)
+env_states = vmap_env_reset_done(env_states, jnp.zeros((NUM_ENV, 1), dtype=jnp.bool_))
 print("Time of reset_done (jit+exec) : {}".format(time() - t0))
 print()
 
@@ -83,7 +83,8 @@ obs_list.append(env_states.obs)
 t0 = time()
 for _ in range(NB_ITER):
     env_states = vmap_env_step(env_states, ACTION_1)
-    env_states = vmap_env_reset_done(env_states)
+    done = jnp.logical_or(env_states.truncated, env_states.terminated)
+    env_states = vmap_env_reset_done(env_states, done)
     obs_list.append(env_states.obs)
 print("{0} iterations in {1}s".format(NB_ITER, time() - t0))
 print()
@@ -92,7 +93,8 @@ pulse = 2 * jnp.pi / NB_ITER * jnp.ones((NUM_ENV,))
 t0 = time()
 for i in range(NB_ITER):
     env_states = vmap_env_step(env_states, vmap_vel(pulse, i * jnp.ones((NUM_ENV,))))
-    env_states = vmap_env_reset_done(env_states)
+    done = jnp.logical_or(env_states.truncated, env_states.terminated)
+    env_states = vmap_env_reset_done(env_states, done)
     obs_list.append(env_states.obs)
 print("{0} iterations in {1}s".format(NB_ITER, time() - t0))
 print()
@@ -110,7 +112,7 @@ def animate_vect_goalobs(i):
 ani_goal = animation.FuncAnimation(fig, animate_vect_goalobs, frames=FRAMES)
 FFwriter = animation.FFMpegWriter()
 ani_goal.save(
-    "animation_rollout.mp4",
+    "test_balls_env_vectorization.mp4",
     writer=FFwriter,
     progress_callback=lambda i, n: print(i),
 )

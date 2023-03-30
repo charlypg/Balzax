@@ -33,9 +33,10 @@ print("Time to reset (jit+exec) : {}s".format(time() - t0))
 print("State of the environment : Timestep 0")
 print(env_state)
 print()
+# image_list.append(env.get_image(env_state.game_state))
 
 t0 = time()
-env_state = jit_env_reset_done(env_state)
+env_state = jit_env_reset_done(env_state, jnp.array([False], dtype=jnp.bool_))
 print("Time to reset_done (jit+exec) : {}s".format(time() - t0))
 print("State of the environment : Timestep 0")
 print(env_state)
@@ -56,7 +57,8 @@ image_list.append(env_state.obs)
 t0 = time()
 for i in jnp.arange(NB_ITER):
     env_state = jit_env_step(env_state, vel(pulse, i))
-    env_state = jit_env_reset_done(env_state)
+    done = jnp.logical_or(env_state.terminated, env_state.truncated)
+    env_state = jit_env_reset_done(env_state, done)
     image_list.append(env_state.obs)
 
 print(
@@ -78,7 +80,7 @@ def animate_vect_goalobs(i):
 ani_goal = animation.FuncAnimation(fig, animate_vect_goalobs, frames=FRAMES)
 FFwriter = animation.FFMpegWriter()
 ani_goal.save(
-    "animation_rollout.mp4",
+    "test_balls_env_image.mp4",
     writer=FFwriter,
     progress_callback=lambda i, n: print(i),
 )
