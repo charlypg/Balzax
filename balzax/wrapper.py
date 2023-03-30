@@ -93,33 +93,6 @@ class GymWrapper(gym.Env):
 
 
 # TODO: adapt reset(_done) to new Gym interface
-class GymWrapperSB3(GymWrapper):
-    """Gym wrapper which can be used with stable-baselines3"""
-
-    def render(self, mode="image"):
-        """Rendering of the game state : image by default"""
-        return onp.array(super().render(mode=mode))
-
-    def reset(self, return_info: bool = False):
-        """Resets env state"""
-        return onp.array(super().reset(return_info=return_info))
-
-    def reset_done(self, return_info: bool = False):
-        """Resets env when done is true"""
-        return onp.array(super().reset_done(return_info=return_info))
-
-    def step(self, action: onp.ndarray):
-        """Performs an env step"""
-        obs, reward, terminated, truncated, info = super().step(jnp.array(action))
-        obs = onp.array(obs)
-        reward = onp.array(reward.squeeze(-1))
-        terminated = onp.array(terminated.squeeze(-1))
-        truncated = onp.array(truncated.squeeze(-1))
-        info = jnpdict_to_onpdict(info)
-        return obs, reward, terminated, truncated, info
-
-
-# TODO: adapt reset(_done) to new Gym interface
 class GymVecWrapper(gym.Env):
     """Vectorized version of GymWrapper.
     This wrapper that converts a vectorized Balzax Env to a Gym Env."""
