@@ -16,7 +16,6 @@ def jnpdict_to_onpdict(jnp_dict: Dict[str, jnp.ndarray]):
     return onp_dict
 
 
-# TODO: adapt reset(_done) to new Gym interface
 class GymWrapper(gym.Env):
     """A wrapper that converts Balzax Env to one that follows Gym API."""
 
@@ -70,9 +69,19 @@ class GymWrapper(gym.Env):
         else:
             return self.env_state.obs
 
-    def reset_done(self, return_info: bool = False):
+    def reset_done(
+        self,
+        done: bool,
+        return_info: bool = True,
+        seed: Optional[int] = None,
+        options: Optional[dict] = None,
+    ):
         """Resets env when done is true"""
-        self.env_state = self.reset_done_be(self.env_state)
+        if seed is not None:
+            self.seed(seed=seed)
+        self.env_state = self.reset_done_be(
+            self.env_state, jnp.array(done, dtype=jnp.bool_)
+        )
         if return_info:
             info = self.env_state.metrics.copy()
             info.update(self.env_state.info)
@@ -92,7 +101,6 @@ class GymWrapper(gym.Env):
         )
 
 
-# TODO: adapt reset(_done) to new Gym interface
 class GymVecWrapper(gym.Env):
     """Vectorized version of GymWrapper.
     This wrapper that converts a vectorized Balzax Env to a Gym Env."""
@@ -165,9 +173,19 @@ class GymVecWrapper(gym.Env):
         else:
             return self.env_state.obs
 
-    def reset_done(self, return_info: bool = False):
+    def reset_done(
+        self,
+        done: bool,
+        return_info: bool = True,
+        seed: Optional[int] = None,
+        options: Optional[dict] = None,
+    ):
         """Resets env when done is true"""
-        self.env_state = self.reset_done_be(self.env_state)
+        if seed is not None:
+            self.seed(seed=seed)
+        self.env_state = self.reset_done_be(
+            self.env_state, jnp.array(done, dtype=jnp.bool_)
+        )
         if return_info:
             info = self.env_state.metrics.copy()
             info.update(self.env_state.info)

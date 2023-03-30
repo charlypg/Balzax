@@ -20,7 +20,6 @@ class EnvState:
     info: Dict[str, Any] = flax.struct.field(default_factory=dict)
 
 
-# TODO: adapt to new Gym interface / done in reset_done args ?
 class BalzaxEnv(abc.ABC):
     """Defines a Balzax environment without goal"""
 
@@ -33,7 +32,7 @@ class BalzaxEnv(abc.ABC):
         """Run a timestep of the environment"""
 
     @abc.abstractmethod
-    def reset_done(self, env_state: EnvState) -> EnvState:
+    def reset_done(self, env_state: EnvState, done: jnp.ndarray) -> EnvState:
         """Resets environment when done"""
 
     def render(self, env_state: EnvState):

@@ -17,7 +17,6 @@ def sparse_reward_bottom_left_corner(balls: Ball):
     return jnp.array((jnp.array([jnp.sum(balls.pos**2)]) < 0.05), dtype=jnp.float32)
 
 
-# TODO: adapt to new Gym interface / done in reset_done args ?
 class BallsEnv(BalzaxEnv, BallsBase):
     """Balls RL environment"""
 
@@ -57,9 +56,8 @@ class BallsEnv(BalzaxEnv, BallsBase):
             metrics=metrics,
         )
 
-    def reset_done(self, env_state: EnvState) -> EnvState:
+    def reset_done(self, env_state: EnvState, done: jnp.ndarray) -> EnvState:
         """Resets the environment when done."""
-        done = jnp.logical_or(env_state.terminated, env_state.truncated)
         pred = done.squeeze(-1)
         return jax.lax.cond(pred, self.reset, lambda key: env_state, env_state.key)
 
