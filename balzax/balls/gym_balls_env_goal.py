@@ -21,7 +21,7 @@ def gym_balls_env_goal_factory(
 ):
     gym.register(
         id=name,
-        entry_point="balzax.gym_balls_env_goal:GymBallsEnvGoal",
+        entry_point="balzax.balls.gym_balls_env_goal:GymBallsEnvGoal",
         max_episode_steps=None,
         kwargs={
             "obs_type": obs_type,

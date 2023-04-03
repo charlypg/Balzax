@@ -15,7 +15,7 @@ def gym_single_balls_env_factory(
 ):
     gym.register(
         id=name,
-        entry_point="balzax.gym_balls_env:GymSingleBallsEnv",
+        entry_point="balzax.balls.gym_balls_env:GymSingleBallsEnv",
         max_episode_steps=None,
         kwargs={
             "obs_type": obs_type,
@@ -56,7 +56,7 @@ def gym_balls_env_factory(
 ):
     gym.register(
         id=name,
-        entry_point="balzax.gym_balls_env:GymBallsEnv",
+        entry_point="balzax.balls.gym_balls_env:GymBallsEnv",
         max_episode_steps=None,
         kwargs={
             "obs_type": obs_type,
