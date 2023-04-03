@@ -2,24 +2,33 @@ import numpy as onp
 from time import time
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-
-from balzax.balls.balls_env import BallsEnv
-from balzax.wrapper import GymVecWrapper
+import gym
+from balzax.balls import gym_balls_env_factory
 
 OBS_TYPE = "image"
+NUM_BALLS = 4
 NUM_ENVS = 3
 SEED = 0
 MAX_EPISODE_STEPS = 3
 NB_ITER = 22
 PULSE = 2 * onp.pi / NB_ITER * onp.ones((NUM_ENVS, 1))
 
-env = BallsEnv(obs_type=OBS_TYPE, max_episode_steps=MAX_EPISODE_STEPS)
-gym_env = GymVecWrapper(env=env, num_envs=NUM_ENVS, seed=SEED)
+gym_balls_env_factory(
+    name="test_env",
+    obs_type=OBS_TYPE,
+    num_balls=NUM_BALLS,
+    max_episode_steps=MAX_EPISODE_STEPS,
+    num_envs=NUM_ENVS,
+    seed=SEED,
+    backend="gpu",
+)
+
+gym_env = gym.make("test_env")
 
 t0 = time()
 obs = gym_env.reset()
 delta = time() - t0
-print("gym_env.reset : {}".format(delta))
+print("gym_env.reset (first): {}".format(delta))
 obs_list = [obs]
 
 t0 = time()
@@ -48,7 +57,7 @@ def animate_vect_goalobs(i):
 ani_goal = animation.FuncAnimation(fig, animate_vect_goalobs, frames=FRAMES)
 FFwriter = animation.FFMpegWriter()
 ani_goal.save(
-    "test_gym_vec_balls_env_factory.mp4",
+    "test_gym_vec_balls_env.mp4",
     writer=FFwriter,
     progress_callback=lambda i, n: print(i),
 )
