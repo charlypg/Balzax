@@ -2,7 +2,6 @@ import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 from time import time
-
 from balzax.balls.balls_env_goal import BallsEnvGoal
 
 
@@ -83,8 +82,3 @@ print(
     )
 )
 print()
-
-for i, image in enumerate(image_list):
-    plt.figure(i)
-    plt.title("Timestep {}".format(i))
-    plt.imshow(image, origin="lower")

@@ -3,7 +3,6 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from time import time
-
 from balzax.balls.balls_env_goal import BallsEnvGoal
 
 
@@ -18,22 +17,6 @@ vmap_vel = jax.jit(jax.vmap(vel))
 @jax.jit
 def compute_done(terminated: jnp.ndarray, truncated: jnp.ndarray) -> jnp.ndarray:
     return jnp.logical_or(terminated, truncated)
-
-
-def plot_vect_goalobs(i: int, vect_goalobs: dict, num_goalobs: int):
-    fig = plt.figure(i, constrained_layout=True)
-    fig.suptitle("Timestep {}".format(i))
-
-    # create num_goalobs x 1 subfigs
-    subfigs = fig.subfigures(nrows=num_goalobs, ncols=1)
-    for row, subfig in enumerate(subfigs):
-        subfig.suptitle("Environment {}".format(row))
-
-        # create 1x3 subplots per subfig
-        axs = subfig.subplots(nrows=1, ncols=3)
-        for ax, field, images in zip(axs, vect_goalobs.keys(), vect_goalobs.values()):
-            ax.imshow(images[row])
-            ax.set_title(field)
 
 
 OBS_TYPE = "image"
@@ -133,7 +116,7 @@ def animate_vect_goalobs(i):
 ani_goal = animation.FuncAnimation(fig, animate_vect_goalobs, frames=FRAMES)
 FFwriter = animation.FFMpegWriter()
 ani_goal.save(
-    "animation_rollout_goal_oriented.mp4",
+    "test_balls_env_goal_vectorization.mp4",
     writer=FFwriter,
     progress_callback=lambda i, n: print(i),
 )

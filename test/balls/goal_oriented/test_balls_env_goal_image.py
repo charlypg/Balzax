@@ -3,7 +3,6 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from time import time
-
 from balzax.balls.balls_env_goal import BallsEnvGoal
 
 
@@ -29,7 +28,7 @@ jit_env_step = jax.jit(env.step)  # env.step
 
 key = jax.random.PRNGKey(0)
 NB_ITER_1 = 1
-NB_ITER_2 = 200
+NB_ITER_2 = 90
 assert NB_ITER_1 < NB_ITER_2
 pulse = 3 * jnp.array(2 * jnp.pi / (NB_ITER_2 - NB_ITER_1 + 1))
 goalobs_list = []
@@ -91,6 +90,7 @@ print(
 )
 print()
 
+
 FRAMES = NB_ITER_1 + NB_ITER_2
 fig, axs = plt.subplots(1, 3)
 
@@ -107,7 +107,7 @@ def animate_vect_goalobs(i):
 ani_goal = animation.FuncAnimation(fig, animate_vect_goalobs, frames=FRAMES)
 FFwriter = animation.FFMpegWriter()
 ani_goal.save(
-    "animation_rollout_goal_oriented.mp4",
+    "test_balls_env_goal_image.mp4",
     writer=FFwriter,
     progress_callback=lambda i, n: print(i),
 )
