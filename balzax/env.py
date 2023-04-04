@@ -1,5 +1,5 @@
 import abc
-from typing import Dict, Any
+from typing import Union, Dict, Any
 import jax
 import jax.numpy as jnp
 import flax
@@ -7,14 +7,17 @@ import flax
 
 @flax.struct.dataclass
 class EnvState:
-    """Defines the environment state (without goal)"""
+    """Fully describes the system state
+    and embeds necessary info for RL
+    algorithms
+    + goal specifications in the GC case"""
 
     key: jnp.ndarray
     timestep: jnp.ndarray
-    obs: jnp.ndarray
     reward: jnp.ndarray
     terminated: jnp.ndarray
     truncated: jnp.ndarray
+    obs: Union[jnp.ndarray, Dict[str, jnp.ndarray]]
     game_state: flax.struct.dataclass
     metrics: Dict[str, jnp.ndarray] = flax.struct.field(default_factory=dict)
     info: Dict[str, Any] = flax.struct.field(default_factory=dict)
@@ -43,7 +46,13 @@ class BalzaxEnv(abc.ABC):
     def observation_shape(self):
         key = jax.random.PRNGKey(0)
         env_state = self.reset(key)
-        return env_state.obs.shape
+        if type(env_state.obs) == dict:
+            return (
+                env_state.obs.get("observation").shape,
+                env_state.obs.get("achieved_goal").shape,
+            )
+        else:
+            return env_state.obs.shape
 
     @property
     def observation_low(self):
@@ -70,24 +79,7 @@ class BalzaxEnv(abc.ABC):
         return self
 
 
-@flax.struct.dataclass
-class GoalEnvState:
-    """Fully describes the system state
-    and embeds necessary info for RL
-    algorithms + goal specifications"""
-
-    key: jnp.ndarray
-    timestep: jnp.ndarray
-    reward: jnp.ndarray
-    terminated: jnp.ndarray
-    truncated: jnp.ndarray
-    goalobs: Dict[str, jnp.ndarray]
-    game_state: flax.struct.dataclass
-    metrics: Dict[str, jnp.ndarray] = flax.struct.field(default_factory=dict)
-    info: Dict[str, Any] = flax.struct.field(default_factory=dict)
-
-
-class BalzaxGoalEnv(abc.ABC):
+class BalzaxGoalEnv(BalzaxEnv):
     """Defines a Balzax environment with a goal
     for goal conditioned RL"""
 
@@ -109,66 +101,17 @@ class BalzaxGoalEnv(abc.ABC):
 
     @abc.abstractmethod
     def set_desired_goal(
-        self, goal_env_state: GoalEnvState, desired_goal: jnp.ndarray
-    ) -> GoalEnvState:
+        self, goal_env_state: EnvState, desired_goal: jnp.ndarray
+    ) -> EnvState:
         """Sets desired goal"""
-
-    @abc.abstractmethod
-    def reset(self, key: jnp.ndarray) -> GoalEnvState:
-        """Resets the environment to an initial state"""
-
-    @abc.abstractmethod
-    def step(self, env_state: GoalEnvState, action: jnp.ndarray) -> GoalEnvState:
-        """Run a timestep of the environment"""
-
-    @abc.abstractmethod
-    def reset_done(self, env_state: GoalEnvState, done: jnp.ndarray) -> GoalEnvState:
-        """Resets environment when done"""
-
-    def render(self, env_state: GoalEnvState):
-        """Returns a render of the env state"""
-        return None
-
-    @property
-    def goalobs_shapes(self):
-        key = jax.random.PRNGKey(0)
-        env_state = self.reset(key)
-        return (
-            env_state.goalobs.get("observation").shape,
-            env_state.goalobs.get("achieved_goal").shape,
-        )
 
     @property
     def goal_low(self):
-        raise Exception("BalzaxEnv : goal_low Not Implemented in inherited class")
+        raise Exception("BalzaxGoalEnv : goal_low Not Implemented in inherited class")
 
     @property
     def goal_high(self):
-        raise Exception("BalzaxEnv : goal_high Not Implemented in inherited class")
-
-    @property
-    def observation_low(self):
-        raise Exception(
-            "BalzaxEnv : observation_low Not Implemented in inherited class"
-        )
-
-    @property
-    def observation_high(self):
-        raise Exception(
-            "BalzaxEnv : observation_high Not Implemented in inherited class"
-        )
-
-    @property
-    def action_shape(self):
-        raise Exception("BalzaxEnv : action_shape Not Implemented in inherited class")
-
-    @property
-    def action_low(self):
-        raise Exception("BalzaxEnv : action_low Not Implemented in inherited class")
-
-    @property
-    def action_high(self):
-        raise Exception("BalzaxEnv : action_high Not Implemented in inherited class")
+        raise Exception("BalzaxGoalEnv : goal_high Not Implemented in inherited class")
 
     @property
     def unwrapped(self):
