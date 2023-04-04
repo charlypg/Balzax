@@ -1,6 +1,5 @@
 import jax
 import jax.numpy as jnp
-import matplotlib.pyplot as plt
 from time import time
 from balzax.balls.balls_env_goal import BallsEnvGoal
 
