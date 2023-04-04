@@ -27,7 +27,11 @@ pip install git+https://github.com/charlypg/Balzax
 
 ### *Balzax* general framework
 
-*Balzax* provides a **general framework** to implement ***simple, vectorized and fast RL environments*** thanks to JAX automatic vectorization and *Just-In-Time (JIT)* compilation tools. Like in *OpenAI Gym*, your custom environment simply has to be an inherited class from ***BalzaxEnv*** (equivalent of *gym.Env*), or ***BalzaxGoalEnv*** (equivalent of *gym.GoalEnv*) for **goal-conditioned RL**. The key difference is that the state is externally managed as JAX is functional. It is not an attribute of the class environment like in *Gym*.
+*Balzax* provides a **general framework** to implement ***simple, vectorized and fast RL environments*** thanks to JAX automatic vectorization and *Just-In-Time (JIT)* compilation tools. 
+
+Like in *OpenAI Gym*, your custom environment simply has to be an inherited class from ***BalzaxEnv*** (equivalent of *gym.Env*), or ***BalzaxGoalEnv*** (equivalent of *gym.GoalEnv*) for **goal-conditioned RL**. 
+
+The key difference is that the state is externally managed as JAX is functional. It is not an attribute of the class environment as in *Gym* environments.
 
 However, *Balzax* also provides a **Gym wrapper** for each type of environment (goal-oriented or not) so as to apply state-of-the-art algorithms and baselines.
 
@@ -37,7 +41,7 @@ However, *Balzax* also provides a **Gym wrapper** for each type of environment (
 
 Balls environments have given its name to *Balzax* (Balls+JAX). The idea is that the agent controls a small disk in a window, a ball, and its goal is to move some of the balls so as to reach a desired configuration. 
 
-*See **example 1.** and [**Balls environments description**](BALLS_ENVS.md) for more details.*
+*See [**example 1.**](#1-learning-to-push-a-ball-to-a-desired-position-thanks-to-sacher) and [**Balls environments description**](BALLS_ENVS.md) for more details.*
 
 ## Examples
 
