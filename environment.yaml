@@ -1,0 +1,13 @@
+name: balzax
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip:
+    - flax==0.6.4
+    - jax==0.4.4
+    - jaxlib==0.4.4+cuda11.cudnn82
+    - matplotlib==3.7.0
+    - numpy==1.24.2
+    - gym==0.26.2
