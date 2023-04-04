@@ -37,9 +37,9 @@ However, *Balzax* also provides a **Gym wrapper** for each type of environment (
 
 *By the future*, *Balzax* environments might benefit from JAX automatic differentiation to implement **differentiable environments**.
 
-### Balls environments 
+### *Balls* environments 
 
-Balls environments have given its name to *Balzax* (Balls+JAX). The idea is that the agent controls a small disk in a window, a ball, and its goal is to move some of the balls so as to reach a desired configuration. 
+Balls environments have given its name to *Balzax* (Balls+JAX). The idea is that the agent controls a small disk in a window, a ball, and its goal is to move some balls in the environment so as to reach a desired configuration. 
 
 *See [**example 1.**](#1-learning-to-push-a-ball-to-a-desired-position-thanks-to-sacher) and [**Balls environments description**](BALLS_ENVS.md) for more details.*
 
@@ -47,6 +47,8 @@ Balls environments have given its name to *Balzax* (Balls+JAX). The idea is that
 
 ### 1. Learning to push a ball to a desired position thanks to SAC+HER
 
-The environment considered here is *BallsEnvGoal*. The goal of the agent is to move the small blue ball so as to guide the other blue ball to its goal position in red. After ***1 500 000 learning steps***, the following result is obtained using SAC+HER. 
+The environment considered here is *BallsEnvGoal*. The goal of the agent is to move the small blue ball so as to guide the other blue ball to its goal position in red. The following trajectories are obtained using the policy learned thanks to SAC+HER. 
 
 https://user-images.githubusercontent.com/91844362/174491520-8bf9e437-6964-4cae-a90a-182c78f81844.mp4
+
+*See [**Balls environments description**](BALLS_ENVS.md) for more details.*
