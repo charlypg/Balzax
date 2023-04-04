@@ -92,11 +92,7 @@ SAVE_AGENT_EVERY_X_STEPS = hyperparameters[num_balls_str]["training_params"][
     "SAVE_AGENT_EVERY_X_STEPS"
 ]
 SAVE_DIR = os.path.join(
-    os.path.expanduser("~"),
-    "Documents",
-    "doctorat",
-    "implems_perso",
-    "test_xpag",
+    os.path.curdir,
     "results",
     "xpag",
     "sac_train_balzax",
