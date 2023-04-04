@@ -1,0 +1,46 @@
+{
+    "1": {
+        "agent_params": {
+            "HIDDEN_DIMS": [256, 256],
+            "ACTOR_LR": 3e-4,
+            "CRITIC_LR": 3e-4,
+            "TEMP_LR": 3e-4,
+            "TAU": 5e-3,
+            "SEED_AGENT": 0
+        },
+        "training_params": {
+            "NUM_ENVS": 100,
+            "RATIO_SAVE_STEP_MAX_STEP": 10,
+            "BATCH_SIZE": 256,
+            "BUFFER_SIZE": 1000000,
+            "GD_STEPS_PER_STEP": 1,
+            "MAX_STEPS": 510001,
+            "EVALUATE_EVERY_X_STEPS": 3000,
+            "SAVE_AGENT_EVERY_X_STEPS": 30000,
+            "SAVE_EPISODE": true,
+            "SEED": 0
+        }
+    },
+    "2": {
+        "agent_params": {
+            "HIDDEN_DIMS": [256, 256],
+            "ACTOR_LR": 3e-4,
+            "CRITIC_LR": 3e-4,
+            "TEMP_LR": 3e-4,
+            "TAU": 5e-3,
+            "SEED_AGENT": 0
+        },
+        "training_params": {
+            "NUM_ENVS": 100,
+            "RATIO_SAVE_STEP_MAX_STEP": 10,
+            "BATCH_SIZE": 256,
+            "BUFFER_SIZE": 1000000,
+            "GD_STEPS_PER_STEP": 1,
+            "MAX_STEPS": 3000001,
+            "EVALUATE_EVERY_X_STEPS": 3000,
+            "SAVE_AGENT_EVERY_X_STEPS": 30000,
+            "SAVE_EPISODE": true,
+            "SEED": 0
+        }
+    }
+}
