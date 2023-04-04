@@ -24,7 +24,7 @@ class BallsEnv(BalzaxEnv, BallsBase):
         self,
         obs_type: str = "position",
         num_balls: int = 4,
-        max_episode_steps: int = 500,
+        max_episode_steps: int = 300,
     ):
         BallsBase.__init__(self, obs_type=obs_type, num_balls=num_balls)
         self.max_episode_steps = jnp.array(max_episode_steps, dtype=jnp.int32)

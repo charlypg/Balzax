@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 from typing import Callable
 
-from balzax.env import GoalEnvState, BalzaxGoalEnv
+from balzax.env import EnvState, BalzaxGoalEnv
 from balzax.balls.balls_base import BallsBase
 
 
@@ -41,7 +41,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         num_balls: int = 4,
         goal_projection: str = "identity",
         goal_success: str = "default",
-        max_episode_steps: int = 500,
+        max_episode_steps: int = 300,
     ):
         BallsBase.__init__(self, obs_type=obs_type, num_balls=num_balls)
 
@@ -63,9 +63,9 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
 
         self.max_episode_steps = jnp.array(max_episode_steps, dtype=jnp.int32)
 
-    def render(self, goal_env_state: GoalEnvState):
+    def render(self, env_state: EnvState):
         """Returns an image of the scene"""
-        return BallsBase.get_image(self, goal_env_state.game_state)
+        return BallsBase.get_image(self, env_state.game_state)
 
     def compute_projection(self, observation: jnp.ndarray) -> jnp.ndarray:
         """Computes observation projection on goal space"""
@@ -82,19 +82,19 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         return self.compute_goal_is_success(achieved_goal, desired_goal)
 
     def set_desired_goal(
-        self, goal_env_state: GoalEnvState, desired_goal: jnp.ndarray
-    ) -> GoalEnvState:
+        self, env_state: EnvState, desired_goal: jnp.ndarray
+    ) -> EnvState:
         """Sets desired goal"""
-        new_goalobs = goal_env_state.goalobs
-        new_goalobs["desired_goal"] = desired_goal
-        return GoalEnvState(
-            key=goal_env_state.key,
-            timestep=goal_env_state.timestep,
-            reward=goal_env_state.reward,
-            terminated=goal_env_state.terminated,
-            truncated=goal_env_state.truncated,
-            goalobs=new_goalobs,
-            game_state=goal_env_state.game_state,
+        new_obs = env_state.obs.copy()
+        new_obs["desired_goal"] = desired_goal
+        return EnvState(
+            key=env_state.key,
+            timestep=env_state.timestep,
+            reward=env_state.reward,
+            terminated=env_state.terminated,
+            truncated=env_state.truncated,
+            goalobs=new_obs,
+            game_state=env_state.game_state,
         )
 
     def reset_goal(self, key):
@@ -111,13 +111,13 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         achieved_goal = self.compute_projection(observation)
         return new_key, new_balls, observation, achieved_goal
 
-    def reset(self, key) -> GoalEnvState:
+    def reset(self, key) -> EnvState:
         """Resets environment and asign a new goal"""
         inter_key, desired_goal = self.reset_goal(key)
 
         new_key, new_balls, observation, achieved_goal = self.reset_game(inter_key)
 
-        goalobs = {
+        obs = {
             "observation": observation,
             "achieved_goal": achieved_goal,
             "desired_goal": desired_goal,
@@ -129,33 +129,29 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         truncated = jnp.array([False], dtype=jnp.bool_)
         metrics = dict(is_success=is_success.copy())
 
-        return GoalEnvState(
+        return EnvState(
             key=new_key,
             timestep=jnp.array([0], dtype=jnp.int32),
             reward=reward,
             terminated=terminated,
             truncated=truncated,
-            goalobs=goalobs,
+            obs=obs,
             game_state=new_balls,
             metrics=metrics,
         )
 
-    def reset_done(
-        self, goal_env_state: GoalEnvState, done: jnp.ndarray
-    ) -> GoalEnvState:
+    def reset_done(self, env_state: EnvState, done: jnp.ndarray) -> EnvState:
         """Resets the environment when done."""
         pred = done.squeeze(-1)
-        return jax.lax.cond(
-            pred, self.reset, lambda key: goal_env_state, goal_env_state.key
-        )
+        return jax.lax.cond(pred, self.reset, lambda key: env_state, env_state.key)
 
-    def step(self, goal_env_state: GoalEnvState, action: jnp.ndarray) -> GoalEnvState:
+    def step(self, env_state: EnvState, action: jnp.ndarray) -> EnvState:
         """Performs a goal environment step."""
-        new_balls = BallsBase.step_base(self, goal_env_state.game_state, action)
+        new_balls = BallsBase.step_base(self, env_state.game_state, action)
 
         new_observation = self.get_obs(new_balls)
         new_achieved_goal = self.compute_projection(new_observation)
-        desired_goal = goal_env_state.goalobs.get("desired_goal")
+        desired_goal = env_state.goalobs.get("desired_goal")
         new_goalobs = {
             "observation": new_observation,
             "achieved_goal": new_achieved_goal,
@@ -163,7 +159,7 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         }
 
         reward = self.compute_reward(new_achieved_goal, desired_goal)
-        new_timestep = goal_env_state.timestep + 1
+        new_timestep = env_state.timestep + 1
         truncated_b = BallsBase.truncated_base(self, new_balls)
 
         is_success = self.compute_is_success(new_achieved_goal, desired_goal)
@@ -174,8 +170,8 @@ class BallsEnvGoal(BalzaxGoalEnv, BallsBase):
         truncated = jnp.logical_or(truncated, truncated_b)
         truncated = jnp.logical_and(truncated, jnp.logical_not(terminated))
 
-        return GoalEnvState(
-            key=goal_env_state.key,
+        return EnvState(
+            key=env_state.key,
             timestep=new_timestep,
             reward=reward,
             terminated=terminated,
