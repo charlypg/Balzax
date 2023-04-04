@@ -3,7 +3,7 @@
 
 # Balzax
 
-Game environments for reinforcement learning and open-ended learning composed of balls moving other balls and coded in JAX. 
+*Balzax* is an open source Python library for developing ***simple, vectorized and fast reinforcement learning environments*** thanks to JAX. It provides an API and already implemented game environments to test and compare reinforcement learning algorithms. 
 
 ## Installation
 
@@ -41,7 +41,7 @@ However, *Balzax* also provides a **Gym wrapper** for each type of environment (
 
 Balls environments have given its name to *Balzax* (Balls+JAX). The idea is that the agent controls a small disk in a window, a ball, and its goal is to move some balls in the environment so as to reach a desired configuration. 
 
-*See [**example 1.**](#1-learning-to-push-a-ball-to-a-desired-position-thanks-to-sacher) and [**Balls environments description**](BALLS_ENVS.md) for more details.*
+*See [**example 1**](#1-learning-to-push-a-ball-to-a-desired-position-thanks-to-sacher) and [**Balls environments description**](BALLS_ENVS.md) for more details.*
 
 ## Examples
 
